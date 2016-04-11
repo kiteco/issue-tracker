@@ -1,0 +1,12 @@
+{
+  "name": "kite",
+  "main": "./lib/kite",
+  "version": "0.0.0",
+  "description": "A simple plugin to make Atom work with Kite",
+  "keywords": [],
+  "license": "MIT",
+  "engines": {
+    "atom": ">=1.0.0 <2.0.0"
+  },
+  "dependencies": {}
+}
