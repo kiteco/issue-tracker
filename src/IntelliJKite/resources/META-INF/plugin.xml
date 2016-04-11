@@ -1,0 +1,33 @@
+<idea-plugin version="2">
+  <id>com.kite.intellij</id>
+  <name>Kite</name>
+  <version>1.0</version>
+  <vendor email="support@kite.com" url="http://www.kite.com">Kite</vendor>
+
+  <description><![CDATA[
+      Connects Kite to your Jetbrains IDE.
+    ]]></description>
+
+  <change-notes><![CDATA[
+
+    ]]>
+  </change-notes>
+
+  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+  <idea-version since-build="90.96"/>
+
+  <depends>com.intellij.modules.lang</depends>
+  <depends>com.intellij.modules.xdebugger</depends>
+
+  <extensions defaultExtensionNs="com.intellij">
+  </extensions>
+
+  <actions>
+  </actions>
+
+  <project-components>
+    <component>
+      <implementation-class>KiteProjectComponent</implementation-class>
+    </component>
+  </project-components>
+</idea-plugin>
