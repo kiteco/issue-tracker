@@ -1,6 +1,6 @@
 ### Known issues
 `PyCharm`
-* Inbound events may top out at 4 or 10MB's in size.
+* Inbound events may top out at 4 or 10MB in size.
 
 vim
 * No "focus" events.
