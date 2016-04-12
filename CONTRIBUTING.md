@@ -1,7 +1,7 @@
 ## How to write a Kite plug-in ##
 The plug-in needs to do two tihngs:
-1. Sending editor events to Kite.
-2. Receiving diffs and applying them to the editor. 
+- Sending editor events to Kite.
+- Receiving diffs and applying them to the editor. 
 
 We will now go through how to accomplish these two tasks in more detail.
 
@@ -93,6 +93,8 @@ Each plug-in source file should begin with the following comment:
 # Contents of this plug-in will be reset by Kite on start. Changes you make
 # are not guaranteed to persist.
 ```
+
+## Some details
 
 ### Character vs byte offsets
 
