@@ -1,7 +1,7 @@
 Kite is an artificial pair programmer, which helps you code better and faster. To allow Kite to do so, we've made various editor plugins to connect your programming environment to our backend. What's even better is that we are making all the source code for the plugins public, and we invite all hackers out there to make Kite alive for their favorite editors!
 
 ## Contributing
-Kite currently supports `vim`, `Sublime Text`, `PyCharm` and `Atom`, and we expect the list to grow fast! To live the philosophy of bring-your-own editor, we made it extremely easy to create an editor plugin for Kite. Here we provide the guideline of how to do so. Join us to bring Kite to many more editors! Don't forget to also check out [CONTRIBUTING](https://github.com/kiteco/plugins/blob/master/CONTRIBUTING.md) for setup, testing, and making pull requests.
+Kite currently supports `vim`, `Sublime Text`, `PyCharm` and `Atom`, and we expect the list to grow fast! To live the philosophy of *bring-your-own* editor, we made it extremely easy to create an editor plugin for Kite. Here we provide the guideline of how to do so. Join us to bring Kite to many more editors! Don't forget to also check out [CONTRIBUTING](https://github.com/kiteco/plugins/blob/master/CONTRIBUTING.md) for setup, testing, and making pull requests.
 
 ## How to write a Kite plugin ##
 The plugin needs to do two tihngs:
