@@ -1,7 +1,7 @@
 Kite is an artificial pair programmer, which helps you code better and faster. To allow Kite to do so, we've made various editor plugins to connect your programming environment to our backend. What's even better is that we are making all the source code for the plugins public, and we invite all hackers out there to make Kite alive for their favorite editors!
 
 ## Contributing
-Kite currently supports `vim`, `Sublime Text`, `PyCharm` and `Atom`, and we expect the list to grow fast! To live the philosophy of *bring-your-own* editor, we made it extremely easy to create an editor plugin for Kite. Here we provide the guideline of how to do so. Join us to bring Kite to many more editors! Don't forget to also check out [CONTRIBUTING](https://github.com/kiteco/plugins/blob/master/CONTRIBUTING.md) for setup, testing, and making pull requests.
+Kite currently supports `vim`, `Sublime Text`, `PyCharm` and `Atom`, and we expect the list to grow fast! To live the philosophy of *bring-your-own* editor, we made it extremely easy to create an editor plugin for Kite. Here we provide the guideline of how to do so. Join us to bring Kite to many more editors! Don't forget to also check out [CONTRIBUTING](https://github.com/kiteco/plugins/blob/master/CONTRIBUTING.md) to see guidelines for setup, testing, and making pull requests.
 
 ## How to write a Kite plugin ##
 The plugin needs to do two tihngs:
@@ -99,13 +99,13 @@ Each plugin source file should begin with the following comment:
 # are not guaranteed to persist.
 ```
 
-## Some details
+### Some details
 
-### Character vs byte offsets
+#### Character vs byte offsets
 
 All offsets and lengths related to strings are specified in units of characters (i.e., unicode code points), not bytes (relevant for handling unicode strings).
 
-### Focus events
+#### Focus events
 
 Events with an action called `focus` should be sent every time the user changes the currently-focused file in the editor, AND every time the editor window gains OS X focus.
 
@@ -113,7 +113,7 @@ Events with an action called `lost_focus` should be sent every time the editor w
 
 Raising an event when the window gains OS X focus can be impossible with terminal editors. For example, [this discussion](http://apple.stackexchange.com/a/44377) seems to indicate decisively that there is no reliable vim hook for this. The draft plan is currently to use the accessibility API to track when terminal tabs get focus, and use a heuristic to match them to any running vim editor (still a todo).
 
-### Same file open multiple times
+#### Same file open multiple times
 
 Some editors synchronize multiple buffers if they're for the same file, even without saves, e.g. IntelliJ, Eclipse, while other editors do not, e.g. Sublime Text.
 
