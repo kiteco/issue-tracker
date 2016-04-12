@@ -126,8 +126,5 @@ The big saving grace here are the `focus` events. Without them and their repeat 
 - `PyCharm:` [Adam Smith](https://github.com/adamsmith)
 - `Atom:` [Tarak Upadhyaya](https://github.com/tarakju), [Alex Flint](https://github.com/alexflint)
 
-## Known issues
-The list of known issues for the plugins can be found in [ISSUES](https://github.com/kiteco/plugins/blob/master/ISSUES.md). We expect to improve the plugins over time!
-
 ## License
 All the software in this repository is released under the MIT License. See [LICENSE](https://github.com/kiteco/plugins/blob/master/LICENSE) for details.
