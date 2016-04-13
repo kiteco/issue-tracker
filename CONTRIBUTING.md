@@ -1,4 +1,4 @@
-## Contributing to Kite plugins
+## Contribute to Kite plugins
 
 First of all, thank you for contributing to Kite plugins! We're glad that you're joining us to bring Kite live to more editors and help more programmers code better and faster! 
 

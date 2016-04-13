@@ -25,7 +25,7 @@ To support sending events to Kite:
  - The cursor position is represented as a selection with `start == end` (see below).
  - These events should only be sent for the currently active buffer. Changes made to a non-active file (e.g. through multi-file find/replace) should not be sent.
 
-3. The ability to write json blobs to a unix domain socket:
+3. The ability to write json blobs to a unix domain socket (or UDP, more details to come):
  - `libkited` listens to json objects sent to `$HOME/.kite/kite.sock`
  - A typical example of json structure being sent by vim is:
 ```javascript
