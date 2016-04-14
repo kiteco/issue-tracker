@@ -4,7 +4,7 @@ Kite is an artificial pair programmer, which helps you code better and faster. T
 Kite currently supports `vim`, `Sublime Text`, `PyCharm` and `Atom`, and we expect the list to grow fast! To live the philosophy of *bring-your-own* editor, we made it extremely easy to create an editor plugin for Kite. Here we provide the guideline of how to do so. Join us to bring Kite to many more editors! Don't forget to also check out [CONTRIBUTING](https://github.com/kiteco/plugins/blob/master/CONTRIBUTING.md) to read more about how to contribute to Kite plugins.
 
 ## How to write a Kite plugin ##
-The plugin needs to do two tihngs:
+The plugin needs to do two things:
 - Sending editor events to Kite.
 - Receiving diffs and applying them to the editor. 
 
@@ -21,7 +21,7 @@ To support sending events to Kite:
 
 2. Be able to distinguish between an "edit" or "selection" event:
  - An "edit" event is a change in buffer contents. It need not be a single character change. 
- - A selection event is when the cursor is moved, or selection is changed without content being edited. Note: Sometimes editors will trigger an edit AND selection for regular typing (b/c the buffer was modified AND the cursor moved as a result of entering text). Its OK to send both of these events, `libkited` will correctly dedupe and send what is needed.
+ - A selection event is when the cursor is moved, or selection is changed without content being edited. Note: Sometimes editors will trigger an edit AND selection for regular typing (b/c the buffer was modified AND the cursor moved as a result of entering text). It's OK to send both of these events, `libkited` will correctly dedupe and send what is needed.
  - The cursor position is represented as a selection with `start == end` (see below).
  - These events should only be sent for the currently active buffer. Changes made to a non-active file (e.g. through multi-file find/replace) should not be sent.
 
@@ -33,15 +33,15 @@ To support sending events to Kite:
   "source": "vim",
   "action": "edit", # could be "selection",
   "text": <buffer contents>,
-  "selections": [{start: 5, end: 5}, {start: 10, end: 20}...],
+  "selections": [{"start": 5, "end": 5}, {"start": 10, "end": 20}...],
 }
 ```
 
 **Note**: the `source` field should identify the particular editor. It's okay if multiple processes are open that use the same `source`. For PyCharm (which is a fork of IntelliJ targeting Python programmers) we still use "intellij" because it's the same code base as other IntelliJ forks or IntelliJ itself.
 
-**Note 2**: filename's should be after resolving symlinks, resolving `.` and `..`, and getting to the underlying, canonical file path. In Java you can do this with `getCanonicalPath()`. In Python you can do this with `os.realpath`.
+**Note 2**: filenames should be sent after resolving symlinks, `.`, and `..`, and getting to the underlying canonical file path. In Java you can do this with `getCanonicalPath()`. In Python you can do this with `os.realpath`.
 
-**Note 3**: before sending an event, check if the `text` is longer than 2^20 (1024*1024) characters. If it is, replace the event's action with "skip" and its contents with "file_too_large".
+**Note 3**: before sending an event, check if the `text` is longer than 2^20 (1024*1024) characters. If it is, replace the event's action with `skip` and its contents with "file_too_large".
 
 Here's a quick example of how this looks in python - it may vary based on the language you are working on for the plugin.
 ```py
