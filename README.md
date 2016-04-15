@@ -1,9 +1,14 @@
-Kite is an artificial pair programmer, which helps you code better and faster. To allow Kite to do so, we've made various editor plugins to connect your programming environment to our backend. What's even better is that we are making all the source code for the plugins public, and we invite all hackers out there to make Kite alive for their favorite editors!
+# Kite Plugins
 
-Note that this is not Kite! These are the *editor plugins* for Kite. We're giving out invites, and you can sign up for it [here](https://www.kite.com)!
+Kite augments your coding environment with all the internet’s programming knowledge. We've made plugins for various editors so that you can start using Kite regardless of the editor you use. If you don't see a plugin for your favorite editor, feel to request one, or, better yet, go ahead and write one yourself! Checkout the Contributing section below.
+
+When you download and install Kite, plugins for various editors will be installed by Kite automatically.
+
+*Please note that these plugins do not provide the full Kite experience. These are the plugins that allow your editor to work with Kite. You will still need to download and install the Kite application. To sign up for an invite, you can click [here](https://www.kite.com).*
+
 
 ## Contributing
-Kite currently supports `vim`, `Sublime Text`, `PyCharm` and `Atom`, and we expect the list to grow fast! To live the philosophy of *bring-your-own* editor, we made it extremely easy to create an editor plugin for Kite. Here we provide the guideline of how to do so. Join us to bring Kite to many more editors! Don't forget to also check out [CONTRIBUTING](https://github.com/kiteco/plugins/blob/master/CONTRIBUTING.md) to read more about how to contribute to Kite plugins.
+Kite currently supports `vim`, `Sublime Text`, `PyCharm` and `Atom`, and we expect the list to grow fast! In the spirit of *bring-your-own-editor*, we have made it extremely easy to create editor plugins for Kite. Here we provide guidelines for developing your own. Help us bring Kite to many more editors! Check out [CONTRIBUTING](https://github.com/kiteco/plugins/blob/master/CONTRIBUTING.md) to read more about how to contribute to Kite plugins.
 
 ## How to write a Kite plugin ##
 The plugin needs to do two things:
