@@ -54,7 +54,7 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
             sock = self._get_sock()
             sock.sendto(payload, self.SOCK_PATH)
         except Exception as e:
-            print("sock.sento exception: %s" % e)
+            print("sock.sendto exception: %s" % e)
 
     # Implements run from threading.Thread. This is used for reading from
     # the domain socket via _read_loop()
