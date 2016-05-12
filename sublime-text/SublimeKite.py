@@ -155,6 +155,12 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
         self._update('lost_focus', view)
 
     def _update(self, action, view):
+        # Check view group and index to determine if in source code buffer
+        w = view.window()
+        group, index = w.get_view_index(view)
+        if group == -1 and index == -1:
+            return
+
         full_region = sublime.Region(0, view.size())
         full_text = view.substr(full_region)
         selections = [{'start': r.a, 'end': r.b} for r in view.sel()]
