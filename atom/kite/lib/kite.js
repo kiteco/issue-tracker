@@ -37,7 +37,7 @@ var KiteOutgoing = {
   // firing. This works because nodejs is single-threaded and the setTimeout gets
   // scheduled after all other pending events have been handled. Once this happens,
   // we can call mergeEvents, which will pick the last event, and mark it as edit
-  // if any of the events that occurred for that keystroke was in fact an edit.
+  // if any of the events that occured for that keystroke was in fact an edit.
   send: function(event) {
     this.PENDING_EVENTS.push(event);
     if (!this.MERGE_CALLED) {
@@ -109,11 +109,18 @@ var KiteOutgoing = {
     var text = editor.getText();
     var cursorPoint = editor.getCursorBufferPosition();
     var cursorOffset = this.pointToOffset(text, cursorPoint);
+
+    // don't send content over 1mb
+    if (text.length > (1 << 20)) {
+      action = "skip";
+      text = "file_too_large";
+    }
+
     return {
       "source": "atom",
       "action": action,
       "filename": editor.getPath(),
-      "text": editor.getText(),
+      "text": text,
       "pluginId": PLUGIN_ID,
       "selections": [{
         "start": cursorOffset,
@@ -121,7 +128,7 @@ var KiteOutgoing = {
       }],
     };
   },
-  // pointToOffset takes the contents of the buffer and a point object
+  // pointToOffet takes the contents of the buffer and a point object
   // representing the cursor, and returns a byte-offset for the cursor
   pointToOffset: function(text, point) {
     var lines = text.split("\n");
