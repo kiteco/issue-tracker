@@ -16,7 +16,6 @@ import base64
 
 
 PYTHON_VERSION = sys.version_info[0]
-PLUGIN_ID = "sublime%s" % str(PYTHON_VERSION)
 
 FIX_APPLY_ERROR = """It is with great regret we must inform you that we cannot apply the suggested fix. Please contact support@kite.com if the problem persists.
 
@@ -27,14 +26,12 @@ FIX_APPLY_ERROR = """It is with great regret we must inform you that we cannot a
 class SublimeKite(sublime_plugin.EventListener, threading.Thread):
     # Path to outgoing socket
     SOCK_PATH = os.path.expandvars("$HOME/.kite/kite.sock")
-
-    # Directory where kited will look for sockets to send events to us,
-    # based on PLUGIN_ID
-    SOCK_LISTEN_DIR = os.path.expandvars("$HOME/.kite/plugin_socks")
     SOCK_BUF_SIZE = 2 << 20  # 2MB
 
-    # Write to unix domain socket
+    # Plugin ID set by run() below
+    PLUGIN_ID = ""
 
+    # Write to unix domain socket
     def _get_sock(self):
         sock = getattr(self, '_sock', None)
         if sock is None:
@@ -59,12 +56,10 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
     # Implements run from threading.Thread. This is used for reading from
     # the domain socket via _read_loop()
     def run(self):
-        listen_sock = os.path.join(self.SOCK_LISTEN_DIR, PLUGIN_ID)
-        if os.path.exists(listen_sock):
-            os.remove(listen_sock)
-
-        sock = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
-        sock.bind(listen_sock)
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        sock.bind(('127.0.0.1', 0))
+        _, port = sock.getsockname()
+        self.PLUGIN_ID = "udp://127.0.0.1:%d" % port
 
         while True:
             try:
@@ -155,9 +150,20 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
         self._update('lost_focus', view)
 
     def _update(self, action, view):
+        # Check view group and index to determine if in source code buffer
+        w = view.window()
+        group, index = w.get_view_index(view)
+        if group == -1 and index == -1:
+            return
+
         full_region = sublime.Region(0, view.size())
         full_text = view.substr(full_region)
         selections = [{'start': r.a, 'end': r.b} for r in view.sel()]
+
+        # skip content over 1mb
+        if len(full_text) > (1 << 20): # 1mb
+            action = 'skip'
+            full_text = 'file_too_large'
 
         json_body = json.dumps({
             'source': 'sublime-text',
@@ -165,7 +171,7 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
             'filename': realpath(view.file_name()),
             'selections': selections,
             'text': full_text,
-            'pluginId': PLUGIN_ID,
+            'pluginId': self.PLUGIN_ID,
         })
 
         if PYTHON_VERSION >= 3:
@@ -180,7 +186,7 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
             'action': "error",
             'filename': realpath(view.file_name()),
             'text': json.dumps(data),
-            'pluginId': PLUGIN_ID,
+            'pluginId': self.PLUGIN_ID,
         })
 
         if PYTHON_VERSION >= 3:
