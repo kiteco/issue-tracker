@@ -1,0 +1,25 @@
+{
+    "name": "KiteCode",
+    "displayName": "KiteCode",
+    "description": "Kite integration for Visual Studio Code",
+    "version": "0.1.0",
+    "publisher": "Microsoft",
+    "engines": {
+        "vscode": "^1.0.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "onLanguage:python",
+        "onLanguage:javascript",
+        "onLanguage:markdown"
+    ],
+    "main": "./extension",
+    "scripts": {
+        "postinstall": "node ./node_modules/vscode/bin/install"
+    },
+    "devDependencies": {
+        "vscode": "^0.11.0"
+    }
+}
