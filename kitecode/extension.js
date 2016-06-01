@@ -147,6 +147,7 @@ var KiteIncoming = class {
         
         this.incomingSocket.bind(0, "127.0.0.1");
         
+        // Set in the event controller.
         this.kiteOutgoing = undefined;
     };
     
@@ -314,9 +315,9 @@ var KiteEventController = class {
         
         let subscriptions = [];
             
-        vscode.window.onDidChangeActiveTextEditor(this.onEditorChange, this, subscriptions);
         vscode.window.onDidChangeTextEditorSelection(this.onSelection, this, subscriptions);
-        vscode.workspace.onDidChangeTextDocument(this.onEdit,this, subscriptions);
+        vscode.workspace.onDidChangeTextDocument(this.onEdit, this, subscriptions);
+        vscode.window.onDidChangeActiveTextEditor(this.onEditorChange, this, subscriptions);
         
         this._disposable = vscode.Disposable.from(subscriptions);
     };
@@ -341,6 +342,8 @@ var KiteEventController = class {
     };
 };
 
-
 exports.deactivate = deactivate;
 exports.activate = activate;
+exports.KiteOutgoing = KiteOutgoing;
+exports.KiteIncoming = KiteIncoming;
+exports.KiteEventController = KiteEventController;
