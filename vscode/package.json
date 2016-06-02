@@ -3,7 +3,7 @@
   "displayName": "KiteCode",
   "description": "Kite integration for Visual Studio Code",
   "version": "0.1.0",
-  "publisher": "Microsoft",
+  "publisher": "Kite",
   "engines": {
     "vscode": "^1.0.0"
   },
@@ -12,8 +12,6 @@
   ],
   "activationEvents": [
     "onLanguage:python",
-    "onLanguage:javascript",
-    "onLanguage:markdown"
   ],
   "main": "./extension",
   "scripts": {
