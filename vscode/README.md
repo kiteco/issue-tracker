@@ -4,7 +4,7 @@ KiteCode is a plugin that integrates Kite, the programming assistant into Visual
 
 ## Installing the extension
 
-1. [Download the extension package](https://github.com/bnookala/plugins/raw/master/kitecode/KiteCode-0.1.0.vsix)
+1. [Download the extension package](https://github.com/bnookala/plugins/raw/master/vscode/KiteCode-0.1.0.vsix)
 2. Open Visual Studio Code
 3. Open Kite
 4. Drag the extension package onto Visual Studio Code **OR** Open the extension package using the File -> Open interface.
