@@ -235,8 +235,14 @@ var KiteIncoming = class {
            let diff = suggestion.diffs[i];
            
            // Build the start and end position of the highlight before adding it.
+           let offset = diff.end - diff.begin;
            let startPosition = this.buildHighlightPosition(diff.begin, diff.linenum, documentText);
-           let endPosition = this.buildHighlightPosition(diff.end, diff.linenum, documentText);
+
+           if (startPosition === undefined) {
+               continue;
+           }
+
+           let endPosition = new vscode.Position(startPosition.line, startPosition.character + offset);
            
            let range = new vscode.Range(startPosition, endPosition);
            let highlight = new vscode.Diagnostic(range, diff.line_dest, vscode.DiagnosticSeverity.Error);
@@ -260,7 +266,7 @@ var KiteIncoming = class {
         // Iterate until we get to the position of the character we need, and then build
         // a relative vscode.Position.
         for (var i = 0; i < lines.length; i++) {
-            let charactersInLine = lines[i].length + 1; // +1 for the newline at the end of 
+            let charactersInLine = lines[i].length + 1; // +1 for the newline.
 
             if (remainingCharacters - charactersInLine < 0) {
                 return new vscode.Position(linenum - 1, remainingCharacters)
