@@ -114,12 +114,16 @@ class KiteIncoming(threading.Thread):
                 # - Escape out of insert mode
                 # - Return to mark q (original cursor position)
 
-                # Check if the end of the diff region is the end of the line.
-                # If it is, use "A" (append to end of line), otherwise, use regular insert mode (i)
-                if end == len(vim.current.line):
+                # Edits including the beginning and end of the line need slightly different commands:
+                # - At the beginning of the file, skip the part that "jumps to start" of where the edit should happen
+                # - At the end of the file, use 'A' to append to end of line
+                if start == 0:
+                    cmd = "normal! %dgg0%si%s`q" % (linenum, 'vd'*(end-start), diff['destination'])
+                elif end == len(vim.current.line):
                     cmd = "normal! %dgg0%dl%sA%s`q" % (linenum, start, 'vd'*(end-start), diff['destination'])
                 else:
                     cmd = "normal! %dgg0%dl%si%s`q" % (linenum, start, 'vd'*(end-start), diff['destination'])
+
                 vim.command(cmd)
 
             vim.command("redraw")
@@ -253,6 +257,7 @@ if has('python')
         autocmd CursorMoved  * :call PyKiteEvent('selection')
         autocmd CursorMovedI * :call PyKiteEvent('edit')
         autocmd BufEnter     * :call PyKiteEvent('focus')
+        autocmd FocusGained  * :call PyKiteEvent('focus')
         autocmd BufLeave     * :call PyKiteEvent('lost_focus')
     augroup END
 endif
