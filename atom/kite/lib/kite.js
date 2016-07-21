@@ -4,6 +4,8 @@
 var dgram = require('dgram');
 var crypto = require('crypto');
 var fs = require('fs');
+var child_process = require('child_process');
+var process = require('process');
 
 var DEBUG = false;
 
@@ -18,6 +20,9 @@ var PLUGIN_ID = null;
 var KiteOutgoing = {
   UDP_HOST: "127.0.0.1",
   UDP_PORT: 46625,
+  UDS_SOCK: process.env.HOME + '/.kite/kite.sock',
+  UDS_WRITE: process.env.HOME + '/.kite/atom/udswrite',
+  MAX_PACKET_SIZE: 262143,
 
   // NOTE: Ideally we'd set this w/ a 2MB socket buffer. Can't do this in nodejs AFAIK.
   OUTGOING_SOCK: dgram.createSocket("udp4"),
@@ -62,10 +67,26 @@ var KiteOutgoing = {
       }
     }
     if (DEBUG) {
-      console.log(event.action, event.selections[0]);
+      console.log(event.action, event.filename, event.selections[0]);
     }
     var msg = JSON.stringify(event);
-    this.OUTGOING_SOCK.send(msg, 0, msg.length, this.UDP_PORT, this.UDP_HOST);
+    if (msg.length > this.MAX_PACKET_SIZE) {
+      console.log("unable to send message because length exceeded limit");
+      this.reset();
+      return;
+    }
+    var send = child_process.spawn(this.UDS_WRITE, [this.UDS_SOCK, msg]);
+    if (DEBUG) {
+      send.stdout.on('data', (data) => {
+        console.log('udswrite stdout: ', String(data));
+      });
+      send.stderr.on('data', (data) => {
+        console.log('udswrite stderr: ', String(data));
+      });
+      send.on('close', (code) =>{
+        console.log('udswrite exit code: ', code);
+      });
+    }
     this.reset();
   },
 
@@ -83,7 +104,22 @@ var KiteOutgoing = {
       'pluginId': PLUGIN_ID,
     };
     var msg = JSON.stringify(event);
-    this.OUTGOING_SOCK.send(msg, 0, msg.length, this.UDP_PORT, this.UDP_HOST);
+    if (msg.length > this.MAX_PACKET_SIZE) {
+      console.log("unable to send message because length exceeded limit");
+      return;
+    }
+    var send = child_process.spawn(this.UDS_WRITE, [this.UDS_SOCK, msg]);
+    if (DEBUG) {
+      send.stdout.on('data', (data) => {
+        console.log('udswrite stdout: ', String(data));
+      });
+      send.stderr.on('data', (data) => {
+        console.log('udswrite stderr: ', String(data));
+      });
+      send.on('close', (code) =>{
+        console.log('udswrite exit code: ', code);
+      });
+    }
   },
 
   // callback handlers to track edit/selection/focus events
