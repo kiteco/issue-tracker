@@ -21,7 +21,7 @@
 
 (defvar kite-socket-path "~/.kite/kite.sock" "path to unix domain socket")
 
-(defvar kite-udswrite-path "~/.kite/udswrite" "path to udswrite binary")
+(defvar kite-udswrite-path "~/.kite/emacs/udswrite" "path to udswrite binary")
 
 ;;
 ;; Logging
@@ -129,6 +129,10 @@
                       (cons "text" (buffer-string))
                       )))
 
+(defun kite-surface ()
+  (kite-marshal (list (cons "source" "emacs")
+                      (cons "action" "surface"))))
+
 (defun kite-send (message)
   "Check status of socket and send a message if possible"
   (if (< (length message) kite-max-packet-size)
@@ -141,8 +145,9 @@
 
 (defun kite-handle-focus-in ()
   "Called when the user switches to the emacs window."
-  (unless (kite-ignore-buffer)
-    (kite-send (kite-message "focus"))))
+  (if (not (kite-ignore-buffer))
+      (kite-send (kite-message "focus"))
+    (kite-send (kite-surface))))
 
 (defun kite-handle-focus-out ()
   "Called when the user switches away from the emacs window."
@@ -150,27 +155,33 @@
     (kite-send (kite-message "lost_focus"))))
 
 (defun kite-handle-after-change (begin end oldlength)
-  (unless (or kite-in-hook (kite-ignore-buffer))
-    (setq kite-in-hook t)
-    (kite-send (kite-message "edit"))
-    (kite-checkpoint-buffer-state))
-    (setq kite-in-hook nil))  
+  (if (kite-ignore-buffer)
+      (kite-send (kite-surface))
+    (unless kite-in-hook
+      (setq kite-in-hook t)
+      (kite-send (kite-message "edit"))
+      (kite-checkpoint-buffer-state)
+      (setq kite-in-hook nil))))
 
 (defun kite-handle-buffer-list-update ()
   "Called when the user switches between buffers."
-  (unless (or kite-in-hook (kite-ignore-buffer))
-    (setq kite-in-hook t)
-    (kite-send (kite-message "selection"))
-    (setq kite-in-hook nil)))
+  (if (kite-ignore-buffer)
+      (kite-send (kite-surface))
+    (unless kite-in-hook
+      (setq kite-in-hook t)
+      (kite-send (kite-message "selection"))
+      (setq kite-in-hook nil))))
 
 (defun kite-handle-post-command ()
   "Called when the user issues any command"
-  (unless (or kite-in-hook (kite-ignore-buffer))
-    (setq kite-in-hook t)
-    (when (kite-buffer-state-changed)
-      (kite-send (kite-message "selection"))
-      (kite-checkpoint-buffer-state))
-    (setq kite-in-hook nil))) 
+  (if (kite-ignore-buffer)
+      (kite-send (kite-surface))
+    (unless kite-in-hook
+      (setq kite-in-hook t)
+      (when (kite-buffer-state-changed)
+        (kite-send (kite-message "selection"))
+        (kite-checkpoint-buffer-state))
+      (setq kite-in-hook nil))))
 
 ;;
 ;; Initialization
