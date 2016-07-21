@@ -155,6 +155,8 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
     def _update(self, action, view):
         # Check view group and index to determine if in source code buffer
         w = view.window()
+        if w is None:
+            return
         group, index = w.get_view_index(view)
         if group == -1 and index == -1:
             return
