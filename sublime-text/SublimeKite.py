@@ -22,6 +22,9 @@ FIX_APPLY_ERROR = """It is with great regret we must inform you that we cannot a
 - Kite Team
 """
 
+SUBLIME_VERSION = str(sublime.version())[0]
+SOURCE = 'sublime%s' % SUBLIME_VERSION
+
 
 class SublimeKite(sublime_plugin.EventListener, threading.Thread):
     # Path to outgoing socket
@@ -152,6 +155,8 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
     def _update(self, action, view):
         # Check view group and index to determine if in source code buffer
         w = view.window()
+        if w is None:
+            return
         group, index = w.get_view_index(view)
         if group == -1 and index == -1:
             return
@@ -166,7 +171,7 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
             full_text = 'file_too_large'
 
         json_body = json.dumps({
-            'source': 'sublime-text',
+            'source': SOURCE,
             'action': action,
             'filename': realpath(view.file_name()),
             'selections': selections,
@@ -182,7 +187,7 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
     def _error(self, data):
         view = sublime.active_window().active_view()
         json_body = json.dumps({
-            'source': 'sublime-text',
+            'source': SOURCE,
             'action': "error",
             'filename': realpath(view.file_name()),
             'text': json.dumps(data),
