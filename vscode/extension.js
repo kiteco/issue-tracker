@@ -112,8 +112,8 @@ var KiteOutgoing = class {
       'action': "error",
       'filename': editor.document.fileName,
       'text': JSON.stringify(data),
-      'pluginId': PLUGIN_ID
-    }
+      'pluginId': PLUGIN_ID,
+    };
 
     let msg = JSON.stringify(event);
     this.outgoingSocket.send(msg, 0, msg.length, KiteOutgoing.PORT, KiteOutgoing.HOST);
@@ -269,7 +269,7 @@ var KiteIncoming = class {
       let charactersInLine = lines[i].length + 1; // +1 for the newline.
 
       if (remainingCharacters - charactersInLine < 0) {
-        return new vscode.Position(linenum - 1, remainingCharacters)
+        return new vscode.Position(linenum - 1, remainingCharacters);
       }
 
       remainingCharacters = remainingCharacters - charactersInLine;
