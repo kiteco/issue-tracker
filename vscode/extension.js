@@ -21,26 +21,26 @@ function activate (context) {
   context.subscriptions.push(incoming);
   context.subscriptions.push(outgoing);
   context.subscriptions.push(eventController);
-};
+}
 
 // Called when VSCode is shut down.
 function deactivate () {
   console.log('bye');
-};
+}
 
 // Builds a UDP bridge and listens for events from Kite.
 var KiteOutgoing = class {
   static get HOST () {
     return "127.0.0.1";
-  };
+  }
 
   static get PORT () {
     return 46625;
-  };
+  }
 
   constructor () {
     this.outgoingSocket = dgram.createSocket("udp4");
-  };
+  }
 
   // Builds a kite event based on action. An action being
   // an edit, a selection, or a focus.
@@ -77,7 +77,7 @@ var KiteOutgoing = class {
         "end": cursorOffset,
       }],
     };
-  };
+  }
 
   pointToOffset (text, point) {
     let lines = text.split("\n");
@@ -89,7 +89,7 @@ var KiteOutgoing = class {
 
     total += point.character + point.line;
     return total;
-  };
+  }
 
   // Sends an event to Kite.
   sendEvent (action) {
@@ -97,7 +97,7 @@ var KiteOutgoing = class {
     let msg = JSON.stringify(event);
 
     this.outgoingSocket.send(msg, 0, msg.length, KiteOutgoing.PORT, KiteOutgoing.HOST);
-  };
+  }
 
   // Sends an error to Kite.
   sendError (data) {
@@ -112,27 +112,27 @@ var KiteOutgoing = class {
       'action': "error",
       'filename': editor.document.fileName,
       'text': JSON.stringify(data),
-      'pluginId': PLUGIN_ID
-    }
+      'pluginId': PLUGIN_ID,
+    };
 
     let msg = JSON.stringify(event);
     this.outgoingSocket.send(msg, 0, msg.length, KiteOutgoing.PORT, KiteOutgoing.HOST);
-  };
+  }
 
   // Fired on any edit event.
   onEdit (event) {
     this.sendEvent("edit");
-  };
+  }
 
   // Fired when a user highlights or selects a keyword.
   onSelection (event) {
     this.sendEvent("selection");
-  };
+  }
 
   // Fired when a user selects a different pane.
   onEditorChange (event) {
     this.sendEvent("focus");
-  };
+  }
 };
 
 var KiteIncoming = class {
@@ -149,26 +149,26 @@ var KiteIncoming = class {
 
     // Set in the event controller.
     this.kiteOutgoing = undefined;
-  };
+  }
 
   listening () {
     let addr = this.incomingSocket.address();
     PLUGIN_ID = "udp://" + addr.address + ":" + addr.port;
     console.log("UDP Server listening on", PLUGIN_ID);
-  };
+  }
 
   message (msg, rinfo) {
     let data = JSON.parse(msg.toString());
     this.handleSuggestion(data);
-  };
+  }
 
   error (error) {
     console.log("UDP Server error:", error);
-  };
+  }
 
   close () {
     console.log("Closing");
-  };
+  }
 
   // Kite will send back suggestions. Depending on its type,
   // we handle it in one of three different ways:
@@ -188,7 +188,7 @@ var KiteIncoming = class {
     } else if (suggestionType === 'clear') {
       this.handleClear(suggestion);
     }
-  };
+  }
 
   // Applies a suggested fix onto the currently active editor.
   handleApply (suggestion) {
@@ -213,7 +213,7 @@ var KiteIncoming = class {
     }
 
     this.handleClear();
-  };
+  }
 
   // Adds a highlight.
   handleHighlight (suggestion) {
@@ -251,11 +251,11 @@ var KiteIncoming = class {
     }
 
     this.highlights.set(documentUri, allHighlights);
-  };
+  }
 
   handleClear (suggestion) {
     this.highlights.clear();
-  };
+  }
 
   // Kite's highlights provide positions that are absolutely indexed relative to the entire text.
   // Visual Studio's Diagnostic highlights expects the position to be relative to the line.
@@ -269,7 +269,7 @@ var KiteIncoming = class {
       let charactersInLine = lines[i].length + 1; // +1 for the newline.
 
       if (remainingCharacters - charactersInLine < 0) {
-        return new vscode.Position(linenum - 1, remainingCharacters)
+        return new vscode.Position(linenum - 1, remainingCharacters);
       }
 
       remainingCharacters = remainingCharacters - charactersInLine;
@@ -277,7 +277,7 @@ var KiteIncoming = class {
 
     // If we get here, there's probaly a buffer mismatch.
     return undefined;
-  };
+  }
 
   validBuffer (suggestion) {
     const editor = vscode.window.activeTextEditor;
@@ -306,7 +306,7 @@ var KiteIncoming = class {
     }
 
     return true;
-  };
+  }
 };
 
 
@@ -326,26 +326,26 @@ var KiteEventController = class {
     vscode.window.onDidChangeActiveTextEditor(this.onEditorChange, this, subscriptions);
 
     this._disposable = vscode.Disposable.from(subscriptions);
-  };
+  }
 
   dispose () {
     this._disposable.dispose();
-  };
+  }
 
   // User selected some text.
   onSelection (event) {
     this._outgoing.onSelection(event);
-  };
+  }
 
   // User edted some text.
   onEdit (event) {
     this._outgoing.onEdit(event);
-  };
+  }
 
   // The text editor did change.
   onEditorChange (event) {
     this._outgoing.onEditorChange(event);
-  };
+  }
 };
 
 exports.deactivate = deactivate;
