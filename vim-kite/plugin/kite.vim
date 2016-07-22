@@ -2,7 +2,7 @@
 
 function! PyKiteListen()
     let l:filename = expand("%:p")
-python << endpython
+KitePython << endpython
 import vim
 import os
 import json
@@ -13,7 +13,7 @@ import base64
 
 
 class KiteIncoming(threading.Thread):
-    EXIT = json.dumps({"type": "exit"})
+    EXIT = json.dumps({"type": "exit"}).encode("utf-8")
 
     def __init__(self, sock_path, sock):
         super(KiteIncoming, self).__init__()
@@ -32,7 +32,7 @@ class KiteIncoming(threading.Thread):
             try:
                 self._read_loop()
             except vim.error as e:
-                print "vim error: %s" % e
+                print("vim error: %s" % e)
             except Exception:
                 pass
 
@@ -183,7 +183,7 @@ endpython
 endfunction
 
 function! PyKiteShutdown()
-python << endpython
+KitePython << endpython
 
 # ki was created above in PyKiteListen
 ki.stop()
@@ -197,7 +197,7 @@ endfunction
 
 function! PyKiteEvent(action)
     let l:filename = expand("%:p")
-python << endpython
+KitePython << endpython
 import vim
 import os
 import json
@@ -241,7 +241,7 @@ def send_event(action, filename):
         SOCK_PATH = os.path.expandvars("$HOME/.kite/kite.sock")
         uds = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
         uds.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, 2<<20) # 2mb
-        uds.sendto(json.dumps(event), SOCK_PATH)
+        uds.sendto(json.dumps(event).encode("utf-8"), SOCK_PATH)
     except Exception as e:
         pass
 
@@ -249,8 +249,14 @@ send_event(vim.eval("a:action"), vim.eval("l:filename"))
 endpython
 endfunction
 
-
+" use a version of python that exists in the current vim build
 if has('python')
+    command! -nargs=1 KitePython python <args>
+elseif has('python3')
+    command! -nargs=1 KitePython python3 <args>
+endif
+
+if has('python') || has('python3')
     augroup KitePlugin
         autocmd VimEnter     * :call PyKiteListen()
         autocmd VimLeavePre  * :call PyKiteShutdown()
