@@ -2,7 +2,7 @@
 
 function! PyKiteListen()
     let l:filename = expand("%:p")
-Python << endpython
+KitePython << endpython
 import vim
 import os
 import json
@@ -183,7 +183,7 @@ endpython
 endfunction
 
 function! PyKiteShutdown()
-Python << endpython
+KitePython << endpython
 
 # ki was created above in PyKiteListen
 ki.stop()
@@ -197,7 +197,7 @@ endfunction
 
 function! PyKiteEvent(action)
     let l:filename = expand("%:p")
-Python << endpython
+KitePython << endpython
 import vim
 import os
 import json
@@ -251,9 +251,9 @@ endfunction
 
 " use a version of python that exists in the current vim build
 if has('python')
-    command! -nargs=1 Python python <args>
+    command! -nargs=1 KitePython python <args>
 elseif has('python3')
-    command! -nargs=1 Python python3 <args>
+    command! -nargs=1 KitePython python3 <args>
 endif
 
 if has('python') || has('python3')
