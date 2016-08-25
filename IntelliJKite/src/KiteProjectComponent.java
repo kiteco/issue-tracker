@@ -43,9 +43,10 @@ public class KiteProjectComponent implements ProjectComponent, DocumentListener,
 
     private static final boolean DEBUG = false;
 
-    private Project m_project;
+    private final Project m_project;
+    private final KiteLocalhostConnection m_kiteConnection;
+
     private MessageBusConnection m_messageBus;
-    private KiteLocalhostConnection m_kiteConnection;
 
     // for managing our listeners attached to the window focused events
     private WindowFocusListener m_windowFocusListener;
@@ -113,20 +114,26 @@ public class KiteProjectComponent implements ProjectComponent, DocumentListener,
 
     @Override
     public void disposeComponent() {
-        m_project = null;
-        try {
-            if (m_messageBus != null) {
-                m_messageBus.disconnect();
-            }
-        } finally {
-            m_messageBus = null;
-
-            try {
-                m_kiteConnection.close();
-            } finally {
-                m_kiteConnection = null;
-            }
-        }
+        // commenting this code out because we've seen an instance of the above invokeLater()
+        //   in `initComponent` coming after a call to `disposeComponent()`.
+        // in principle this doesn't mean anything funky is happening with the object lifecycle, but
+        //   for the sake of simplicity let's not worry about executing the steps below.
+        // from searching on Github, it seems like most ProjectComponents don't do things like
+        //   disconnect from the message bus on dispose.
+//        m_project = null;
+//        try {
+//            if (m_messageBus != null) {
+//                m_messageBus.disconnect();
+//            }
+//        } finally {
+//            m_messageBus = null;
+//
+//            try {
+//                m_kiteConnection.close();
+//            } finally {
+//                m_kiteConnection = null;
+//            }
+//        }
     }
 
     @Override
