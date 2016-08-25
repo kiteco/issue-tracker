@@ -43,9 +43,10 @@ public class KiteProjectComponent implements ProjectComponent, DocumentListener,
 
     private static final boolean DEBUG = false;
 
-    private Project m_project;
+    private final Project m_project;
+    private final KiteLocalhostConnection m_kiteConnection;
+
     private MessageBusConnection m_messageBus;
-    private KiteLocalhostConnection m_kiteConnection;
 
     // for managing our listeners attached to the window focused events
     private WindowFocusListener m_windowFocusListener;
@@ -104,9 +105,7 @@ public class KiteProjectComponent implements ProjectComponent, DocumentListener,
         ApplicationManager.getApplication().invokeLater(new Runnable() {
             @Override
             public void run() {
-            if(m_project != null) {  // double-fix for a user-report NullReferenceException here
                 sendEvent("focus", FileEditorManager.getInstance(m_project).getSelectedTextEditor());
-            }
             }
         });
         EditorFactory.getInstance().getEventMulticaster().addDocumentListener(this, m_project);
