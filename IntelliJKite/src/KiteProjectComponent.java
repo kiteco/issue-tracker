@@ -104,7 +104,9 @@ public class KiteProjectComponent implements ProjectComponent, DocumentListener,
         ApplicationManager.getApplication().invokeLater(new Runnable() {
             @Override
             public void run() {
+            if(m_project != null) {  // double-fix for a user-report NullReferenceException here
                 sendEvent("focus", FileEditorManager.getInstance(m_project).getSelectedTextEditor());
+            }
             }
         });
         EditorFactory.getInstance().getEventMulticaster().addDocumentListener(this, m_project);
@@ -113,20 +115,26 @@ public class KiteProjectComponent implements ProjectComponent, DocumentListener,
 
     @Override
     public void disposeComponent() {
-        m_project = null;
-        try {
-            if (m_messageBus != null) {
-                m_messageBus.disconnect();
-            }
-        } finally {
-            m_messageBus = null;
-
-            try {
-                m_kiteConnection.close();
-            } finally {
-                m_kiteConnection = null;
-            }
-        }
+        // commenting this code out because we've seen an instance of the above invokeLater()
+        //   in `initComponent` coming after a call to `disposeComponent()`.
+        // in principle this doesn't mean anything funky is happening with the object lifecycle, but
+        //   for the sake of simplicity let's not worry about executing the steps below.
+        // from searching on Github, it seems like most ProjectComponents don't do things like
+        //   disconnect from the message bus on dispose.
+//        m_project = null;
+//        try {
+//            if (m_messageBus != null) {
+//                m_messageBus.disconnect();
+//            }
+//        } finally {
+//            m_messageBus = null;
+//
+//            try {
+//                m_kiteConnection.close();
+//            } finally {
+//                m_kiteConnection = null;
+//            }
+//        }
     }
 
     @Override
