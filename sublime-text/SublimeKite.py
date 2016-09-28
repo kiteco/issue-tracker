@@ -25,6 +25,10 @@ FIX_APPLY_ERROR = """It is with great regret we must inform you that we cannot a
 SUBLIME_VERSION = str(sublime.version())[0]
 SOURCE = 'sublime%s' % SUBLIME_VERSION
 
+KITED_HOSTPORT = "127.0.0.1:46624"
+EVENT_ENDPOINT = "/clientapi/editor/event"
+ERROR_ENDPOINT = "/clientapi/editor/error"
+
 
 class SublimeKite(sublime_plugin.EventListener, threading.Thread):
     # Path to outgoing socket
@@ -33,28 +37,6 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
 
     # Plugin ID set by run() below
     PLUGIN_ID = ""
-
-    # Write to unix domain socket
-    def _get_sock(self):
-        sock = getattr(self, '_sock', None)
-        if sock is None:
-            sock = socket.socket(socket.AF_UNIX,
-                                 socket.SOCK_DGRAM)
-            sock.setsockopt(socket.SOL_SOCKET,
-                            socket.SO_SNDBUF, self.SOCK_BUF_SIZE)
-            setattr(self, '_sock', sock)
-
-            # Start read thread, defined by run()
-            self.start()
-
-        return sock
-
-    def _write_sock(self, payload):
-        try:
-            sock = self._get_sock()
-            sock.sendto(payload, self.SOCK_PATH)
-        except Exception as e:
-            print("sock.sendto exception: %s" % e)
 
     # Implements run from threading.Thread. This is used for reading from
     # the domain socket via _read_loop()
@@ -110,16 +92,8 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
                 adj += len(diff['destination']) - len(diff['source'])
                 view.run_command('apply_suggestion', diff)
         else:
-            self._error({
-                "message": "buffer mismatch",
-                "user_buffer": str(base64.b64encode(full_text)),
-                "user_md5": file_md5,
-                "expected_md5": remote_md5,
-                "expected_buffer": suggestion.get('file_base64', ''),
-                "suggestion": suggestion,
-            })
-            print("error: local hash (%s) != remote hash (%s)" %
-                  (file_md5, remote_md5))
+            msg = "error: local hash (%s) != remote hash (%s)" % (file_md5, remote_md5)
+            self._error(msg)
             sublime.error_message(FIX_APPLY_ERROR)
 
         # Remove all highlights
@@ -153,6 +127,7 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
         self._update('lost_focus', view)
 
     def _update(self, action, view):
+        print("at _update")
         # Check view group and index to determine if in source code buffer
         w = view.window()
         if w is None:
@@ -170,7 +145,7 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
             action = 'skip'
             full_text = 'file_too_large'
 
-        json_body = json.dumps({
+        self._send_json(EVENT_ENDPOINT, {
             'source': SOURCE,
             'action': action,
             'filename': realpath(view.file_name()),
@@ -179,25 +154,38 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
             'pluginId': self.PLUGIN_ID,
         })
 
-        if PYTHON_VERSION >= 3:
-            json_body = bytes(json_body, "utf-8")
-
-        self._write_sock(json_body)
-
-    def _error(self, data):
+    def _error(self, msg):
         view = sublime.active_window().active_view()
-        json_body = json.dumps({
+        self._send_json(ERROR_ENDPOINT, {
             'source': SOURCE,
-            'action': "error",
             'filename': realpath(view.file_name()),
-            'text': json.dumps(data),
-            'pluginId': self.PLUGIN_ID,
+            'message': msg,
         })
+        print(msg)
 
-        if PYTHON_VERSION >= 3:
-            json_body = bytes(json_body, "utf-8")
+    def _send_json(self, endpoint, payload):
+        print("at _send_json")
+        """
+        Send a json payload to kited at the specified endpoint
+        """
+        try:
+            print("sending to endpoint:", endpoint)
+            data = json.dumps(payload)
 
-        self._write_sock(json_body)
+            if PYTHON_VERSION >= 3:
+                print("sending with python 3")
+                import http.client
+                conn = http.client.HTTPConnection(KITED_HOSTPORT)
+                conn.request("POST", endpoint, body=data.encode('utf-8'))
+                conn.close()
+            else:
+                import urllib2
+                url = KITED_HOSTPORT + endpoint
+                conn = urllib2.urlopen(url, method="POST", data=data)
+                conn.close()
+        except Exception as ex:
+            print("unable to send json to kited: ", ex)
+
 
 class ApplySuggestionCommand(sublime_plugin.TextCommand):
     def run(self, edit, begin=None, end=None, destination=None, **kwargs):
