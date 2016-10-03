@@ -28,7 +28,14 @@ SOURCE = 'sublime%s' % SUBLIME_VERSION
 KITED_HOSTPORT = "127.0.0.1:46624"
 EVENT_ENDPOINT = "/clientapi/editor/event"
 ERROR_ENDPOINT = "/clientapi/editor/error"
+COMPLETIONS_ENDPOINT = "/clientapi/editor/completions"
 
+ENABLE_LOG = True
+ENABLE_COMPLETIONS = True
+
+def log(*args):
+    if ENABLE_LOG:
+        print(*args)
 
 class SublimeKite(sublime_plugin.EventListener, threading.Thread):
     # Path to outgoing socket
@@ -50,7 +57,7 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
             try:
                 self._read_loop(sock)
             except Exception as e:
-                print("read loop exception: %s" % e)
+                log("read loop exception: %s" % e)
 
     def _read_loop(self, sock):
         while True:
@@ -60,7 +67,6 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
             else:
                 suggestion = json.loads(data)
 
-            pprint.pprint(suggestion)
             if suggestion['type'] == "apply":
                 sublime.set_timeout(
                     lambda: self.apply_suggestion(suggestion), 0)
@@ -113,21 +119,63 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
             key = self._region_key()
             view.erase_regions(key)
 
-    # Events
     def on_modified(self, view):
+        """
+        on_modified is called by sublime when the buffer contents are edited
+        """
         self._update('edit', view)
 
     def on_selection_modified(self, view):
+        """
+        on_selection_modified is called by sublime when the cursor moves or the
+        selected region changes
+        """
         self._update('selection', view)
 
     def on_activated(self, view):
+        """
+        on_activated is called by sublime when the user switches to this file (or
+        switches windows to sublime)
+        """
         self._update('focus', view)
 
     def on_deactivated(self, view):
+        """
+        on_deactivated is called by sublime when the user switches file (or switches
+        windows to sublime)
+        """
         self._update('lost_focus', view)
 
+    def on_query_completions(self, view, prefix, locations):
+        """
+        on_query_completions is called when sublime is about to show completions
+        """
+        if not ENABLE_COMPLETIONS:
+            return
+
+        resp = self._http_roundtrip(COMPLETIONS_ENDPOINT, {
+            "hash": "<hash of file contents>",
+            "curosr": 123,
+        })
+        log("completions response:", resp)
+        if resp is None:
+            return
+
+        completions = resp.get("completions", None)
+        if completions is None:
+            return
+
+        out = []
+        for c in completions:
+            display = c.get("display", "")
+            insert = c.get("insert", "")
+            hint = c.get("hint", "kite")
+            out.append(("%s\t%s" % (display, hint), insert))
+        log("returning completions:", out)
+        return out
+
     def _update(self, action, view):
-        print("at _update")
+        log("at _update")
         # Check view group and index to determine if in source code buffer
         w = view.window()
         if w is None:
@@ -145,7 +193,7 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
             action = 'skip'
             full_text = 'file_too_large'
 
-        self._send_json(EVENT_ENDPOINT, {
+        self._http_roundtrip(EVENT_ENDPOINT, {
             'source': SOURCE,
             'action': action,
             'filename': realpath(view.file_name()),
@@ -156,35 +204,42 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
 
     def _error(self, msg):
         view = sublime.active_window().active_view()
-        self._send_json(ERROR_ENDPOINT, {
+        self._http_roundtrip(ERROR_ENDPOINT, {
             'source': SOURCE,
             'filename': realpath(view.file_name()),
             'message': msg,
         })
-        print(msg)
+        log(msg)
 
-    def _send_json(self, endpoint, payload):
-        print("at _send_json")
+    def _http_roundtrip(self, endpoint, payload):
         """
         Send a json payload to kited at the specified endpoint
         """
+        resp = None
         try:
-            print("sending to endpoint:", endpoint)
-            data = json.dumps(payload)
+            log("sending to %s: %s" % (endpoint, payload))
+            req = json.dumps(payload)
 
             if PYTHON_VERSION >= 3:
-                print("sending with python 3")
                 import http.client
                 conn = http.client.HTTPConnection(KITED_HOSTPORT)
-                conn.request("POST", endpoint, body=data.encode('utf-8'))
+                conn.request("POST", endpoint, body=req.encode('utf-8'))
+                response = conn.getresponse()
+                resp = response.read().decode('utf-8')
                 conn.close()
             else:
                 import urllib2
                 url = KITED_HOSTPORT + endpoint
-                conn = urllib2.urlopen(url, method="POST", data=data)
+                conn = urllib2.urlopen(url, method="POST", data=req)
+                resp = conn.read()
                 conn.close()
+
+            if resp:
+                return json.loads(resp)
+
         except Exception as ex:
-            print("unable to send json to kited: ", ex)
+            log("error during http roundtrip to %s: %s" % (endpoint, ex))
+            return None
 
 
 class ApplySuggestionCommand(sublime_plugin.TextCommand):
