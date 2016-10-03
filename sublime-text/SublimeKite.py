@@ -1,5 +1,6 @@
 # Contents of this plugin will be reset by Kite on start. Changes you make
 # are not guaranteed to persist.
+from __future__ import print_function
 
 import json
 import os
@@ -30,8 +31,8 @@ EVENT_ENDPOINT = "/clientapi/editor/event"
 ERROR_ENDPOINT = "/clientapi/editor/error"
 COMPLETIONS_ENDPOINT = "/clientapi/editor/completions"
 
-ENABLE_LOG = True
-ENABLE_COMPLETIONS = True
+ENABLE_LOG = False
+ENABLE_COMPLETIONS = False
 
 def log(*args):
     if ENABLE_LOG:
@@ -175,7 +176,6 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
         return out
 
     def _update(self, action, view):
-        log("at _update")
         # Check view group and index to determine if in source code buffer
         w = view.window()
         if w is None:
@@ -217,7 +217,7 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
         """
         resp = None
         try:
-            log("sending to %s: %s" % (endpoint, payload))
+            log("sending to", endpoint, ":", payload)
             req = json.dumps(payload)
 
             if PYTHON_VERSION >= 3:
@@ -229,8 +229,8 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
                 conn.close()
             else:
                 import urllib2
-                url = KITED_HOSTPORT + endpoint
-                conn = urllib2.urlopen(url, method="POST", data=req)
+                url = "http://" + KITED_HOSTPORT + endpoint
+                conn = urllib2.urlopen(url, data=req)
                 resp = conn.read()
                 conn.close()
 
