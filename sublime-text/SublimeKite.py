@@ -31,12 +31,9 @@ EVENT_ENDPOINT = "/clientapi/editor/event"
 ERROR_ENDPOINT = "/clientapi/editor/error"
 COMPLETIONS_ENDPOINT = "/clientapi/editor/completions"
 
-ENABLE_LOG = False
+VERBOSE = False
 ENABLE_COMPLETIONS = False
 
-def log(*args):
-    if ENABLE_LOG:
-        print(*args)
 
 class SublimeKite(sublime_plugin.EventListener, threading.Thread):
     # Path to outgoing socket
@@ -58,7 +55,7 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
             try:
                 self._read_loop(sock)
             except Exception as e:
-                log("read loop exception: %s" % e)
+                print("read loop exception: %s" % e)
 
     def _read_loop(self, sock):
         while True:
@@ -84,11 +81,7 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
     def apply_suggestion(self, suggestion):
         adj = 0
         view = sublime.active_window().active_view()
-
-        full_region = sublime.Region(0, view.size())
-        full_text = view.substr(full_region)
-        full_text = full_text.encode('utf-8')
-        file_md5 = hashlib.md5(full_text).hexdigest()
+        file_md5 = hash_contents(view)
 
         remote_md5 = suggestion.get('file_md5', '')
         if remote_md5 == '' or remote_md5 == file_md5:
@@ -154,11 +147,16 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
         if not ENABLE_COMPLETIONS:
             return
 
+        # do not attempt multi-location completions for now
+        if len(locations) != 1:
+            verbose("ignoring request for completions with %d locations" % len(locations))
+            return
+
         resp = self._http_roundtrip(COMPLETIONS_ENDPOINT, {
-            "hash": "<hash of file contents>",
-            "curosr": 123,
+            "hash": hash_contents(view),
+            "curosr": locations[0],
         })
-        log("completions response:", resp)
+        verbose("completions response:", resp)
         if resp is None:
             return
 
@@ -172,7 +170,7 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
             insert = c.get("insert", "")
             hint = c.get("hint", "kite")
             out.append(("%s\t%s" % (display, hint), insert))
-        log("returning completions:", out)
+        verbose("returning completions:", out)
         return out
 
     def _update(self, action, view):
@@ -209,7 +207,7 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
             'filename': realpath(view.file_name()),
             'message': msg,
         })
-        log(msg)
+        print(msg)
 
     def _http_roundtrip(self, endpoint, payload):
         """
@@ -217,7 +215,7 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
         """
         resp = None
         try:
-            log("sending to", endpoint, ":", payload)
+            verbose("sending to", endpoint, ":", payload)
             req = json.dumps(payload)
 
             if PYTHON_VERSION >= 3:
@@ -238,7 +236,7 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
                 return json.loads(resp)
 
         except Exception as ex:
-            log("error during http roundtrip to %s: %s" % (endpoint, ex))
+            print("error during http roundtrip to %s: %s" % (endpoint, ex))
             return None
 
 
@@ -255,3 +253,22 @@ def realpath(p):
         return os.path.realpath(p)
     except:
         return p
+
+
+def verbose(*args):
+    """
+    Print a log message (or noop if verbose mode is off)
+    """
+    if VERBOSE:
+        print(*args)
+
+
+def hash_contents(view):
+    """
+    Get the MD5 hash of the contents of the provided view.
+    Computing the MD5 hash of a 100k file takes ~0.15ms, which is plenty
+    fast enough for us since we do it at most once per keystroke.
+    """
+    region = sublime.Region(0, view.size())
+    buf = view.substr(region).encode('utf-8')
+    return hashlib.md5(buf).hexdigest()
