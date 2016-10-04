@@ -14,7 +14,7 @@ import base64
 try:
     SOURCE
 except NameError:
-    print vim.eval('version')
+    print vim.command('version')
     SOURCE = 'vim'
 
 
@@ -219,7 +219,7 @@ except NameError:
 try:
     SOURCE
 except NameError:
-    print vim.eval('version')
+    print vim.command('version')
     SOURCE = 'vim'
 
 
