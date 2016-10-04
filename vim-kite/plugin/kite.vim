@@ -2,6 +2,7 @@
 
 function! PyKiteListen()
     let l:filename = expand("%:p")
+    let l:nvim = has('nvim')
 KitePython << endpython
 import vim
 import os
@@ -14,8 +15,7 @@ import base64
 try:
     SOURCE
 except NameError:
-    print vim.command('version')
-    SOURCE = 'vim'
+    SOURCE = 'nvim' if int(vim.eval('l:nvim')) else 'vim'
 
 
 class KiteIncoming(threading.Thread):
@@ -203,6 +203,7 @@ endfunction
 
 function! PyKiteEvent(action)
     let l:filename = expand("%:p")
+    let l:nvim = has('nvim')
 KitePython << endpython
 import vim
 import os
@@ -219,8 +220,7 @@ except NameError:
 try:
     SOURCE
 except NameError:
-    print vim.command('version')
-    SOURCE = 'vim'
+    SOURCE = 'nvim' if int(vim.eval('l:nvim')) else 'vim'
 
 
 def cursor_pos(buf, pos):
