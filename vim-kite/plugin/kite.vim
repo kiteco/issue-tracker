@@ -14,8 +14,7 @@ import base64
 try:
     SOURCE
 except NameError:
-    print os.getcwd()
-    SOURCE = 'nvim' if os.getcwd().index('nvim') != 0 else 'vim'
+    SOURCE = 'vim'
 
 
 class KiteIncoming(threading.Thread):
@@ -219,8 +218,7 @@ except NameError:
 try:
     SOURCE
 except NameError:
-    print os.getcwd()
-    SOURCE = 'nvim' if os.getcwd().index('nvim') != 0 else 'vim'
+    SOURCE = 'vim'
 
 
 def cursor_pos(buf, pos):
