@@ -11,13 +11,17 @@ import uuid
 import hashlib
 import base64
 
-SOURCE = 'vim'
 try:
-    import neovim
-except ImportError:
-    pass
-else:
-    SOURCE = 'nvim'
+    SOURCE
+except NameError:
+    SOURCE = 'vim'
+    try:
+        import neovim
+    except ImportError:
+        pass
+    else:
+        SOURCE = 'nvim'
+
 
 
 class KiteIncoming(threading.Thread):
@@ -217,6 +221,18 @@ try:
     PLUGIN_ID
 except NameError:
     PLUGIN_ID = "vim-%s" % (str(uuid.uuid4()))
+
+try:
+    SOURCE
+except NameError:
+    SOURCE = 'vim'
+    try:
+        import neovim
+    except ImportError:
+        pass
+    else:
+        SOURCE = 'nvim'
+
 
 def cursor_pos(buf, pos):
     (line, col) = pos
