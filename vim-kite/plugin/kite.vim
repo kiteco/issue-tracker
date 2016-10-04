@@ -233,7 +233,7 @@ def send_event(action, filename):
                     vim.current.window.cursor)
 
     event = {
-        'source': 'vim',
+        'source': SOURCE,
         'action': action,
         'filename': realpath(filename),
         'text': '\n'.join(vim.current.buffer),
