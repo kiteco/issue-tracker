@@ -30,6 +30,7 @@ KITED_HOSTPORT = "127.0.0.1:46624"
 EVENT_ENDPOINT = "/clientapi/editor/event"
 ERROR_ENDPOINT = "/clientapi/editor/error"
 COMPLETIONS_ENDPOINT = "/clientapi/editor/completions"
+HTTP_TIMEOUT = 0.5  # timeout for HTTP requests in seconds
 
 VERBOSE = False
 ENABLE_COMPLETIONS = False
@@ -154,7 +155,7 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
 
         resp = self._http_roundtrip(COMPLETIONS_ENDPOINT, {
             "hash": hash_contents(view),
-            "curosr": locations[0],
+            "cursor": locations[0],
         })
         verbose("completions response:", resp)
         if resp is None:
@@ -220,7 +221,7 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
 
             if PYTHON_VERSION >= 3:
                 import http.client
-                conn = http.client.HTTPConnection(KITED_HOSTPORT)
+                conn = http.client.HTTPConnection(KITED_HOSTPORT, timeout=HTTP_TIMEOUT)
                 conn.request("POST", endpoint, body=req.encode('utf-8'))
                 response = conn.getresponse()
                 resp = response.read().decode('utf-8')
@@ -228,7 +229,7 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
             else:
                 import urllib2
                 url = "http://" + KITED_HOSTPORT + endpoint
-                conn = urllib2.urlopen(url, data=req)
+                conn = urllib2.urlopen(url, data=req, timeout=HTTP_TIMEOUT)
                 resp = conn.read()
                 conn.close()
 
