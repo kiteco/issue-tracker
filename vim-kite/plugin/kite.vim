@@ -11,6 +11,14 @@ import uuid
 import hashlib
 import base64
 
+SOURCE = 'vim'
+try:
+    import neovim
+except ImportError:
+    pass
+else:
+    SOURCE = 'nvim'
+
 
 class KiteIncoming(threading.Thread):
     EXIT = json.dumps({"type": "exit"}).encode("utf-8")
@@ -137,7 +145,7 @@ class KiteIncoming(threading.Thread):
 
     def _error(self, data):
         json_body = json.dumps({
-            'source': 'vim',
+            'source': SOURCE,
             'action': "error",
             'text': json.dumps(data),
             'pluginId': PLUGIN_ID,
