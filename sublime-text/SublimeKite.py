@@ -1,5 +1,6 @@
 # Contents of this plugin will be reset by Kite on start. Changes you make
 # are not guaranteed to persist.
+from __future__ import print_function
 
 import json
 import os
@@ -25,6 +26,15 @@ FIX_APPLY_ERROR = """It is with great regret we must inform you that we cannot a
 SUBLIME_VERSION = str(sublime.version())[0]
 SOURCE = 'sublime%s' % SUBLIME_VERSION
 
+KITED_HOSTPORT = "127.0.0.1:46624"
+EVENT_ENDPOINT = "/clientapi/editor/event"
+ERROR_ENDPOINT = "/clientapi/editor/error"
+COMPLETIONS_ENDPOINT = "/clientapi/editor/completions"
+HTTP_TIMEOUT = 0.5  # timeout for HTTP requests in seconds
+
+VERBOSE = False
+ENABLE_COMPLETIONS = False
+
 
 class SublimeKite(sublime_plugin.EventListener, threading.Thread):
     # Path to outgoing socket
@@ -33,28 +43,6 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
 
     # Plugin ID set by run() below
     PLUGIN_ID = ""
-
-    # Write to unix domain socket
-    def _get_sock(self):
-        sock = getattr(self, '_sock', None)
-        if sock is None:
-            sock = socket.socket(socket.AF_UNIX,
-                                 socket.SOCK_DGRAM)
-            sock.setsockopt(socket.SOL_SOCKET,
-                            socket.SO_SNDBUF, self.SOCK_BUF_SIZE)
-            setattr(self, '_sock', sock)
-
-            # Start read thread, defined by run()
-            self.start()
-
-        return sock
-
-    def _write_sock(self, payload):
-        try:
-            sock = self._get_sock()
-            sock.sendto(payload, self.SOCK_PATH)
-        except Exception as e:
-            print("sock.sendto exception: %s" % e)
 
     # Implements run from threading.Thread. This is used for reading from
     # the domain socket via _read_loop()
@@ -78,7 +66,6 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
             else:
                 suggestion = json.loads(data)
 
-            pprint.pprint(suggestion)
             if suggestion['type'] == "apply":
                 sublime.set_timeout(
                     lambda: self.apply_suggestion(suggestion), 0)
@@ -95,11 +82,7 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
     def apply_suggestion(self, suggestion):
         adj = 0
         view = sublime.active_window().active_view()
-
-        full_region = sublime.Region(0, view.size())
-        full_text = view.substr(full_region)
-        full_text = full_text.encode('utf-8')
-        file_md5 = hashlib.md5(full_text).hexdigest()
+        file_md5 = hash_contents(view)
 
         remote_md5 = suggestion.get('file_md5', '')
         if remote_md5 == '' or remote_md5 == file_md5:
@@ -110,16 +93,8 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
                 adj += len(diff['destination']) - len(diff['source'])
                 view.run_command('apply_suggestion', diff)
         else:
-            self._error({
-                "message": "buffer mismatch",
-                "user_buffer": str(base64.b64encode(full_text)),
-                "user_md5": file_md5,
-                "expected_md5": remote_md5,
-                "expected_buffer": suggestion.get('file_base64', ''),
-                "suggestion": suggestion,
-            })
-            print("error: local hash (%s) != remote hash (%s)" %
-                  (file_md5, remote_md5))
+            msg = "error: local hash (%s) != remote hash (%s)" % (file_md5, remote_md5)
+            self._error(msg)
             sublime.error_message(FIX_APPLY_ERROR)
 
         # Remove all highlights
@@ -139,18 +114,65 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
             key = self._region_key()
             view.erase_regions(key)
 
-    # Events
     def on_modified(self, view):
+        """
+        on_modified is called by sublime when the buffer contents are edited
+        """
         self._update('edit', view)
 
     def on_selection_modified(self, view):
+        """
+        on_selection_modified is called by sublime when the cursor moves or the
+        selected region changes
+        """
         self._update('selection', view)
 
     def on_activated(self, view):
+        """
+        on_activated is called by sublime when the user switches to this file (or
+        switches windows to sublime)
+        """
         self._update('focus', view)
 
     def on_deactivated(self, view):
+        """
+        on_deactivated is called by sublime when the user switches file (or switches
+        windows to sublime)
+        """
         self._update('lost_focus', view)
+
+    def on_query_completions(self, view, prefix, locations):
+        """
+        on_query_completions is called when sublime is about to show completions
+        """
+        if not ENABLE_COMPLETIONS:
+            return
+
+        # do not attempt multi-location completions for now
+        if len(locations) != 1:
+            verbose("ignoring request for completions with %d locations" % len(locations))
+            return
+
+        resp = self._http_roundtrip(COMPLETIONS_ENDPOINT, {
+            "hash": hash_contents(view),
+            "cursor": locations[0],
+        })
+        verbose("completions response:", resp)
+        if resp is None:
+            return
+
+        completions = resp.get("completions", None)
+        if completions is None:
+            return
+
+        out = []
+        for c in completions:
+            display = c.get("display", "")
+            insert = c.get("insert", "")
+            hint = c.get("hint", "kite")
+            out.append(("%s\t%s" % (display, hint), insert))
+        verbose("returning completions:", out)
+        return out
 
     def _update(self, action, view):
         # Check view group and index to determine if in source code buffer
@@ -170,7 +192,7 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
             action = 'skip'
             full_text = 'file_too_large'
 
-        json_body = json.dumps({
+        self._http_roundtrip(EVENT_ENDPOINT, {
             'source': SOURCE,
             'action': action,
             'filename': realpath(view.file_name()),
@@ -179,25 +201,45 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
             'pluginId': self.PLUGIN_ID,
         })
 
-        if PYTHON_VERSION >= 3:
-            json_body = bytes(json_body, "utf-8")
-
-        self._write_sock(json_body)
-
-    def _error(self, data):
+    def _error(self, msg):
         view = sublime.active_window().active_view()
-        json_body = json.dumps({
+        self._http_roundtrip(ERROR_ENDPOINT, {
             'source': SOURCE,
-            'action': "error",
             'filename': realpath(view.file_name()),
-            'text': json.dumps(data),
-            'pluginId': self.PLUGIN_ID,
+            'message': msg,
         })
+        print(msg)
 
-        if PYTHON_VERSION >= 3:
-            json_body = bytes(json_body, "utf-8")
+    def _http_roundtrip(self, endpoint, payload):
+        """
+        Send a json payload to kited at the specified endpoint
+        """
+        resp = None
+        try:
+            verbose("sending to", endpoint, ":", payload)
+            req = json.dumps(payload)
 
-        self._write_sock(json_body)
+            if PYTHON_VERSION >= 3:
+                import http.client
+                conn = http.client.HTTPConnection(KITED_HOSTPORT, timeout=HTTP_TIMEOUT)
+                conn.request("POST", endpoint, body=req.encode('utf-8'))
+                response = conn.getresponse()
+                resp = response.read().decode('utf-8')
+                conn.close()
+            else:
+                import urllib2
+                url = "http://" + KITED_HOSTPORT + endpoint
+                conn = urllib2.urlopen(url, data=req, timeout=HTTP_TIMEOUT)
+                resp = conn.read()
+                conn.close()
+
+            if resp:
+                return json.loads(resp)
+
+        except Exception as ex:
+            print("error during http roundtrip to %s: %s" % (endpoint, ex))
+            return None
+
 
 class ApplySuggestionCommand(sublime_plugin.TextCommand):
     def run(self, edit, begin=None, end=None, destination=None, **kwargs):
@@ -212,3 +254,22 @@ def realpath(p):
         return os.path.realpath(p)
     except:
         return p
+
+
+def verbose(*args):
+    """
+    Print a log message (or noop if verbose mode is off)
+    """
+    if VERBOSE:
+        print(*args)
+
+
+def hash_contents(view):
+    """
+    Get the MD5 hash of the contents of the provided view.
+    Computing the MD5 hash of a 100k file takes ~0.15ms, which is plenty
+    fast enough for us since we do it at most once per keystroke.
+    """
+    region = sublime.Region(0, view.size())
+    buf = view.substr(region).encode('utf-8')
+    return hashlib.md5(buf).hexdigest()
