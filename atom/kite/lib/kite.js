@@ -332,14 +332,31 @@ var KiteIncoming = {
     }
     return null;
   },
-
 };
 
+// var Completions = {
+//   selector: ".source.python",
+//   getSuggestions: function(event) {
+//     console.log("completions were requested:", event);
+//     return new Promise(function (resolve, reject) {
+//       var suggestion = {
+//         text: "elephant"
+//       };
+//       resolve([suggestion]);
+//     });
+//   }
+// };
+
+var provider = require('./provider.coffee');
+
+console.log("hello from kite.js");
+console.log(provider);
 
 module.exports = {
   outgoing: KiteOutgoing,
   incoming: KiteIncoming,
   activate: function() {
+    console.log("in activate()");
     this.incoming.initialize();
     // observeTextEditors takes a callback that fires whenever a new
     // editor window is created. We use this to call "observeEditor",
@@ -349,4 +366,8 @@ module.exports = {
     // focus is tracked at the workspace level.
     atom.workspace.onDidChangeActivePaneItem(this.outgoing.onFocus.bind(this.outgoing));
   },
+  getProvider: function() {
+    console.log("in getProvider()");
+    return provider;
+  }
 };
