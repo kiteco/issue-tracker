@@ -2,6 +2,7 @@
 
 function! PyKiteListen()
     let l:filename = expand("%:p")
+    let l:nvim = has('nvim')
 KitePython << endpython
 import vim
 import os
@@ -10,6 +11,11 @@ import threading
 import uuid
 import hashlib
 import base64
+
+try:
+    SOURCE
+except NameError:
+    SOURCE = 'nvim' if int(vim.eval('l:nvim')) else 'vim'
 
 
 class KiteIncoming(threading.Thread):
@@ -137,7 +143,7 @@ class KiteIncoming(threading.Thread):
 
     def _error(self, data):
         json_body = json.dumps({
-            'source': 'vim',
+            'source': SOURCE,
             'action': "error",
             'text': json.dumps(data),
             'pluginId': PLUGIN_ID,
@@ -197,6 +203,7 @@ endfunction
 
 function! PyKiteEvent(action)
     let l:filename = expand("%:p")
+    let l:nvim = has('nvim')
 KitePython << endpython
 import vim
 import os
@@ -209,6 +216,12 @@ try:
     PLUGIN_ID
 except NameError:
     PLUGIN_ID = "vim-%s" % (str(uuid.uuid4()))
+
+try:
+    SOURCE
+except NameError:
+    SOURCE = 'nvim' if int(vim.eval('l:nvim')) else 'vim'
+
 
 def cursor_pos(buf, pos):
     (line, col) = pos
@@ -225,7 +238,7 @@ def send_event(action, filename):
                     vim.current.window.cursor)
 
     event = {
-        'source': 'vim',
+        'source': SOURCE,
         'action': action,
         'filename': realpath(filename),
         'text': '\n'.join(vim.current.buffer),
