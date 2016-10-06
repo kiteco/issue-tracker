@@ -65,7 +65,7 @@ public class KiteProjectComponent implements ProjectComponent, DocumentListener,
 
     public KiteProjectComponent(Project project) throws Exception {
         m_project = project;
-        m_namesInfo = new ApplicationNamesInfo();
+        m_namesInfo = ApplicationNamesInfo.getInstance();
         String fullName = m_namesInfo.getFullProductName();
         // For legacy reasons, we use "idea" for IntelliJ IDEA and "intellij" for PyCharm
         String source = fullName.contains("IDEA") ? "idea" : "intellij";
