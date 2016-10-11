@@ -45,7 +45,6 @@ public class KiteProjectComponent implements ProjectComponent, DocumentListener,
     private static final boolean DEBUG = false;
 
     private final Project m_project;
-    private final ApplicationNamesInfo m_namesInfo;
     private final KiteLocalhostConnection m_kiteConnection;
 
     private MessageBusConnection m_messageBus;
@@ -65,10 +64,8 @@ public class KiteProjectComponent implements ProjectComponent, DocumentListener,
 
     public KiteProjectComponent(Project project) throws Exception {
         m_project = project;
-        m_namesInfo = ApplicationNamesInfo.getInstance();
-        String fullName = m_namesInfo.getFullProductName();
-        // For legacy reasons, we use "idea" for IntelliJ IDEA and "intellij" for PyCharm
-        String source = fullName.contains("IDEA") ? "idea" : "intellij";
+        String fullName = ApplicationNamesInfo.getInstance().getFullProductName();
+        String source = fullName.contains("IDEA") ? "intellij" : "pycharm";
         m_kiteConnection = new KiteLocalhostConnection(this, source);
 
         m_windowFocusListener = new WindowFocusListener() {
