@@ -11,6 +11,7 @@
 
 import com.intellij.execution.process.*;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ApplicationNamesInfo;
 import com.intellij.openapi.application.Result;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.components.ProjectComponent;
@@ -63,7 +64,9 @@ public class KiteProjectComponent implements ProjectComponent, DocumentListener,
 
     public KiteProjectComponent(Project project) throws Exception {
         m_project = project;
-        m_kiteConnection = new KiteLocalhostConnection(this);
+        String fullName = ApplicationNamesInfo.getInstance().getFullProductName();
+        String source = fullName.contains("IDEA") ? "intellij" : "pycharm";
+        m_kiteConnection = new KiteLocalhostConnection(this, source);
 
         m_windowFocusListener = new WindowFocusListener() {
             @Override

@@ -19,13 +19,16 @@ public class KiteLocalhostConnection {
     private static final int UDP_PORT = 46625;
     private static final int INBOUND_RECEIVE_BUFFER_SIZE = 10*1024*2014;  // 10 MB
 
+    private final String m_source;  // "idea" or "intellij"
+
     private KiteProjectComponent m_projectComponent;
     private DatagramSocket m_outbound;
     private DatagramSocket m_inbound;
     private final int m_inboundPort;
     private final String m_pluginID;
 
-    public KiteLocalhostConnection(KiteProjectComponent projectComponent) throws Exception {
+    public KiteLocalhostConnection(KiteProjectComponent projectComponent, String source) throws Exception {
+        m_source = source;
         m_projectComponent = projectComponent;
         m_outbound = new DatagramSocket();
 
@@ -40,6 +43,7 @@ public class KiteLocalhostConnection {
     // -----outbound-----
     public void sendEvent(String action, String filename, String text, int selStart, int selEnd) throws Exception {
         OutboundEvent event = new OutboundEvent();
+        event.source = m_source;
         event.action = action;
         event.filename = filename;
         event.text = text;
@@ -74,6 +78,7 @@ public class KiteLocalhostConnection {
 
     public void sendError(String filename, String text) throws Exception {
         OutboundErrorEvent event = new OutboundErrorEvent();
+        event.source = m_source;
         event.action = "error";
         event.filename = filename;
         event.text = text;
@@ -144,7 +149,7 @@ public class KiteLocalhostConnection {
 }
 
 class OutboundEvent {
-    String source = "intellij";
+    String source;
     String action;
     String filename;
     String text;
@@ -158,7 +163,7 @@ class OutboundEventSelectionRange {
 }
 
 class OutboundErrorEvent {
-    String source = "intellij";
+    String source;
     String action;
     String filename;
     String text;
