@@ -30,7 +30,11 @@ KITED_HOSTPORT = "127.0.0.1:46624"
 EVENT_ENDPOINT = "/clientapi/editor/event"
 ERROR_ENDPOINT = "/clientapi/editor/error"
 COMPLETIONS_ENDPOINT = "/clientapi/editor/completions"
-HTTP_TIMEOUT = 0.5  # timeout for HTTP requests in seconds
+
+# Timeout for HTTP requests (in seconds). Note: Sublime will complain if
+# any EventListener handler takes more than 0.1 seconds. So, we set the timeout
+# to 0.09 seconds.
+HTTP_TIMEOUT = 0.09
 
 VERBOSE = False
 ENABLE_COMPLETIONS = False
