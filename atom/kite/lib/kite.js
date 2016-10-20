@@ -6,6 +6,7 @@ var crypto = require('crypto');
 var fs = require('fs');
 var child_process = require('child_process');
 var process = require('process');
+var http = require('http');
 
 var DEBUG = false;
 
@@ -347,10 +348,83 @@ var KiteIncoming = {
 //   }
 // };
 
-var provider = require('./provider.coffee');
+//var provider = require('./provider.coffee');
+
+var provider = {
+  //selector: '.source.js, .source.coffee, .source.python'
+  selector: '.source.python',
+
+  getSuggestions: function(params) {
+    console.log("at getSuggestions:", params);
+    //prefix = @getPrefix(editor, bufferPosition)
+
+    return new Promise(function (resolve, reject) {
+      var options = {
+        host: '127.0.0.1',
+        port: '46624',
+        path: '/clientapi/editor/completions',
+        method: 'POST'
+      };
+
+      var payload = {
+        hash: "<hash>",
+        cursor: 123,
+      };
+
+      var callback = function(response) {
+        var str = ''
+        response.on('data', function (chunk) {
+          str += chunk;
+        });
+
+        response.on('end', function () {
+          console.log(str);
+          try {
+            var resp = JSON.parse(str);
+            var suggestions = [];
+            for (var i = 0; i < resp.completions.length; i++) {
+              c = resp.completions[i];
+              console.log(c);
+              suggestions.push({
+                text: c.display,
+                type: c.hint,
+                rightLabel: c.hint,
+              });
+            }
+            resolve(suggestions);
+          } catch (e) {
+            reject();
+            return;
+          }
+        });
+      };
+
+      var req = http.request(options, callback);
+      req.write(JSON.stringify(payload));
+      req.end();
+
+      console.log("inside promise")
+      suggestion = {
+        text: 'elephant',
+        //replacementPrefix: prefix,
+      };
+      
+    });
+
+    // getPrefix: (editor, bufferPosition) ->
+    //   console.log "hello from getPrefix"
+    //   # Whatever your prefix regex might be
+    //   regex = /[\w0-9_-]+$/
+
+    //   # Get the text for the line up to the triggered buffer position
+    //   line = editor.getTextInRange([[bufferPosition.row, 0], bufferPosition])
+
+    //   # Match the regex to the line, and return the match
+    //   line.match(regex)?[0] or ''
+  }
+};
 
 console.log("hello from kite.js");
-console.log(provider);
 
 module.exports = {
   outgoing: KiteOutgoing,
@@ -366,8 +440,8 @@ module.exports = {
     // focus is tracked at the workspace level.
     atom.workspace.onDidChangeActivePaneItem(this.outgoing.onFocus.bind(this.outgoing));
   },
-  getProvider: function() {
-    console.log("in getProvider()");
+  completions: function() {
+    console.log("in completions()");
     return provider;
   }
 };

@@ -9,10 +9,10 @@
     "atom": ">=1.0.0 <2.0.0"
   },
   "dependencies": {},
-  "providerServices": {
+  "providedServices": {
     "autocomplete.provider": {
       "versions": {
-        "2.0.0": "getProvider"
+        "2.0.0": "completions"
       }
     }
   }
