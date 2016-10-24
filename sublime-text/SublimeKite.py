@@ -87,7 +87,9 @@ class SublimeKite(sublime_plugin.EventListener):
             return
 
         resp = self._http_roundtrip(COMPLETIONS_ENDPOINT, {
-            "hash": hash_contents(view),
+            "source": SOURCE,
+            "filename": realpath(view.file_name()),
+            "text": view.substr(sublime.Region(0, view.size())),
             "cursor": locations[0],
         })
         verbose("completions response:", resp)
