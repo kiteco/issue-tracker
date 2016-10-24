@@ -38,6 +38,7 @@ To support sending events to Kite:
 ```javascript
 { 
   "source": "vim",
+  "filename" : "/full/path/to/file/with/extension.ext",
   "action": "edit", # could be "selection",
   "text": <buffer contents>,
   "selections": [{"start": 5, "end": 5}, {"start": 10, "end": 20}...],
@@ -46,7 +47,7 @@ To support sending events to Kite:
 
 **Note**: the `source` field should identify the particular editor. It's okay if multiple processes are open that use the same `source`. For PyCharm (which is a fork of IntelliJ targeting Python programmers) we still use "intellij" because it's the same code base as other IntelliJ forks or IntelliJ itself.
 
-**Note 2**: filenames should be sent after resolving symlinks, `.`, and `..`, and getting to the underlying canonical file path. In Java you can do this with `getCanonicalPath()`. In Python you can do this with `os.realpath`.
+**Note 2**: `filename`s should be sent after resolving symlinks, `.`, and `..`, and getting to the underlying canonical file path. In Java you can do this with `getCanonicalPath()`. In Python you can do this with `os.realpath`. `filename` is necessary so kite can make sure it's in a user-authorized directory.
 
 **Note 3**: before sending an event, check if the `text` is longer than 2^20 (1024*1024) characters. If it is, replace the event's action with `skip` and its contents with "file_too_large".
 
