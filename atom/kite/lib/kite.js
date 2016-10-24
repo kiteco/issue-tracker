@@ -335,56 +335,59 @@ var KiteIncoming = {
   },
 };
 
-// var Completions = {
-//   selector: ".source.python",
-//   getSuggestions: function(event) {
-//     console.log("completions were requested:", event);
-//     return new Promise(function (resolve, reject) {
-//       var suggestion = {
-//         text: "elephant"
-//       };
-//       resolve([suggestion]);
-//     });
-//   }
-// };
-
-//var provider = require('./provider.coffee');
-
-var provider = {
-  //selector: '.source.js, .source.coffee, .source.python'
+var CompletionsProvider = {
   selector: '.source.python',
+  disableForSelector: '.source.python .comment, .source.python .string',
+  inclusionPriority: 2,
+  suggestionPriority: 2,
+  excludeLowerPriority: false,
 
+  // called to handle diff suggestions
   getSuggestions: function(params) {
-    console.log("at getSuggestions:", params);
-    //prefix = @getPrefix(editor, bufferPosition)
-
     return new Promise(function (resolve, reject) {
-      var options = {
-        host: '127.0.0.1',
-        port: '46624',
-        path: '/clientapi/editor/completions',
-        method: 'POST'
+      var text = params.editor.getText();
+      var cursor = KiteOutgoing.pointToOffset(text, params.bufferPosition);
+      var payload = {
+        "filename": params.editor.getPath(),
+        "text": text,
+        "cursor": cursor,
       };
 
-      var payload = {
-        hash: "<hash>",
-        cursor: 123,
-      };
+      // don't send content over 1mb
+      if (payload.text.length > (1 << 20)) {
+        console.log("buffer contents too large, not attempting completions");
+        reject();
+        return;
+      }
 
       var callback = function(response) {
-        var str = ''
+        var str = '';
         response.on('data', function (chunk) {
           str += chunk;
         });
 
         response.on('end', function () {
-          console.log(str);
+          if (response.statusCode == 404) {
+            // This means we had no completions for this cursor position. Do not call
+            // reject() because that will generate an error in the console.
+            resolve([]);
+            return;
+          } else if (response.statusCode != 200) {
+            reject("error from kited: " + str);
+            return;
+          }
+
           try {
             var resp = JSON.parse(str);
+          } catch (ex) {
+            reject("error parsing response from kited: " + ex);
+            return;
+          }
+
+          try {
             var suggestions = [];
             for (var i = 0; i < resp.completions.length; i++) {
               c = resp.completions[i];
-              console.log(c);
               suggestions.push({
                 text: c.display,
                 type: c.hint,
@@ -392,45 +395,36 @@ var provider = {
               });
             }
             resolve(suggestions);
-          } catch (e) {
-            reject();
+          } catch (ex) {
+            reject("error processing completions from kited: " + ex);
             return;
           }
         });
       };
 
+      var options = {
+        host: '127.0.0.1',
+        port: '46624',
+        path: '/clientapi/editor/completions',
+        method: 'POST'
+      };
+
       var req = http.request(options, callback);
       req.write(JSON.stringify(payload));
       req.end();
-
-      console.log("inside promise")
-      suggestion = {
-        text: 'elephant',
-        //replacementPrefix: prefix,
-      };
-      
     });
+  },
 
-    // getPrefix: (editor, bufferPosition) ->
-    //   console.log "hello from getPrefix"
-    //   # Whatever your prefix regex might be
-    //   regex = /[\w0-9_-]+$/
-
-    //   # Get the text for the line up to the triggered buffer position
-    //   line = editor.getTextInRange([[bufferPosition.row, 0], bufferPosition])
-
-    //   # Match the regex to the line, and return the match
-    //   line.match(regex)?[0] or ''
-  }
+  // called when one of our suggestion is inserted by the user
+  onDidInsertSuggestion: function(params) {
+    // TODO: notify kite that a suggestion was accepted
+  },
 };
-
-console.log("hello from kite.js");
 
 module.exports = {
   outgoing: KiteOutgoing,
   incoming: KiteIncoming,
   activate: function() {
-    console.log("in activate()");
     this.incoming.initialize();
     // observeTextEditors takes a callback that fires whenever a new
     // editor window is created. We use this to call "observeEditor",
@@ -441,7 +435,6 @@ module.exports = {
     atom.workspace.onDidChangeActivePaneItem(this.outgoing.onFocus.bind(this.outgoing));
   },
   completions: function() {
-    console.log("in completions()");
-    return provider;
+    return CompletionsProvider;
   }
 };
