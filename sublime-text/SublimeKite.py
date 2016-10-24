@@ -135,7 +135,8 @@ class SublimeKite(sublime_plugin.EventListener):
                 'pluginId': '',
             }, block=False)
         except Full:
-            print("event queue was full")
+            if VERBOSE:
+                print("event queue was full")
 
     def _error(self, msg):
         view = sublime.active_window().active_view()
