@@ -40,7 +40,6 @@ EVENT_QUEUE_SIZE = 3  # very small queue capacity because we want to throw away 
 VERBOSE = False
 ENABLE_COMPLETIONS = False
 
-
 class SublimeKite(sublime_plugin.EventListener):
     def __init__(self):
         self._event_queue = Queue(maxsize=EVENT_QUEUE_SIZE)
@@ -51,6 +50,7 @@ class SublimeKite(sublime_plugin.EventListener):
         """
         on_modified is called by sublime when the buffer contents are edited
         """
+        print("at on_modified")
         self._update('edit', view)
 
     def on_selection_modified(self, view):
@@ -200,14 +200,3 @@ def verbose(*args):
     """
     if VERBOSE:
         print(*args)
-
-
-def hash_contents(view):
-    """
-    Get the MD5 hash of the contents of the provided view.
-    Computing the MD5 hash of a 100k file takes ~0.15ms, which is plenty
-    fast enough for us since we do it at most once per keystroke.
-    """
-    region = sublime.Region(0, view.size())
-    buf = view.substr(region).encode('utf-8')
-    return hashlib.md5(buf).hexdigest()
