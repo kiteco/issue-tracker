@@ -11,5 +11,5 @@ function pointToOffset(text, point) {
 }
 
 module.exports = {
-  "pointToOffset": pointToOffset,
+  pointToOffset: pointToOffset,
 };
