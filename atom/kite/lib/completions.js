@@ -17,8 +17,7 @@ function getSuggestions(params) {
 
     // don't send content over 1mb
     if (payload.text.length > (1 << 20)) {
-      console.log("buffer contents too large, not attempting completions");
-      reject();
+      reject("buffer contents too large, not attempting completions");
       return;
     }
 

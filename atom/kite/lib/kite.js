@@ -6,7 +6,6 @@ var crypto = require('crypto');
 var fs = require('fs');
 var child_process = require('child_process');
 var process = require('process');
-var http = require('http');
 var utils = require('./utils.js');
 var completions = require('./completions.js');
 
