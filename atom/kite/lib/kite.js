@@ -325,8 +325,6 @@ var KiteIncoming = {
   },
 };
 
-var CompletionsProvider = require('./completions')
-
 module.exports = {
   outgoing: KiteOutgoing,
   incoming: KiteIncoming,
@@ -342,5 +340,5 @@ module.exports = {
   },
   completions: function() {
     return require('./completions.js');
-  }
+  },
 };
