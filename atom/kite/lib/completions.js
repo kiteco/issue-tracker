@@ -3,6 +3,9 @@ var utils = require('./utils.js');
 
 // called to handle attribute completions
 function getSuggestions(params) {
+  if (!atom.config.get('kite.enableCompletions', false)) {
+    return [];
+  }
   return new Promise(function (resolve, reject) {
     var text = params.editor.getText();
     var cursor = utils.pointToOffset(text, params.bufferPosition);
