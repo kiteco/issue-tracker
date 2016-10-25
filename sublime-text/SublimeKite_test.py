@@ -1,8 +1,16 @@
 import sys
 import unittest
 
-if sys.version[0] >= 3:
+if sys.version_info[0] >= 3:
 	from unittest.mock import patch, Mock, MagicMock
+else:
+	from mock import patch, Mock, MagicMock
+
+if sys.version_info[0] >= 3:
+	SUBLIME_VERSION = 3
+else:
+	SUBLIME_VERSION = 2
+
 
 class View(object):
 	"""No need to mock this one because it is simpler just to do explicitly."""
@@ -53,14 +61,9 @@ def make_view(contents, cursor, selection_to=None, path="/src/code.py", index=(0
 class TestCase(unittest.TestCase):
 	def setUp(self):
 		# for testing assume that python2 implies sublime2, python3 implies sublime3
-		if sys.version_info[0] >= 3:
-			sublime_version = 3
-		else:
-			sublime_version = 2
-
 		self.sublime = Mock()
 		self.sublime.Region = Region
-		self.sublime.version = Mock(return_value=str(sublime_version))
+		self.sublime.version = Mock(return_value=str(SUBLIME_VERSION))
 
 		self.sublime_plugin = Mock()
 		self.sublime_plugin.EventListener = EventListener
@@ -89,7 +92,7 @@ class TestCase(unittest.TestCase):
 
 				# test that the right event was generated
 				expected = {
-	                'source': "sublime3",
+	                'source': "sublime%d" % SUBLIME_VERSION,
 	                'action': "edit",
 	                'filename': "/src/code.py",
 	                'selections': [{"start": 3, "end": 3}],
