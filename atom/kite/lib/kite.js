@@ -6,6 +6,8 @@ var crypto = require('crypto');
 var fs = require('fs');
 var child_process = require('child_process');
 var process = require('process');
+var utils = require('./utils.js');
+var completions = require('./completions.js');
 
 var DEBUG = false;
 
@@ -144,7 +146,7 @@ var KiteOutgoing = {
   buildEvent: function(editor, action) {
     var text = editor.getText();
     var cursorPoint = editor.getCursorBufferPosition();
-    var cursorOffset = this.pointToOffset(text, cursorPoint);
+    var cursorOffset = utils.pointToOffset(text, cursorPoint);
 
     // don't send content over 1mb
     if (text.length > (1 << 20)) {
@@ -163,17 +165,6 @@ var KiteOutgoing = {
         "end": cursorOffset,
       }],
     };
-  },
-  // pointToOffet takes the contents of the buffer and a point object
-  // representing the cursor, and returns a byte-offset for the cursor
-  pointToOffset: function(text, point) {
-    var lines = text.split("\n");
-    var total = 0;
-    for (var i = 0; i < lines.length && i < point.row; i++) {
-      total += lines[i].length;
-    }
-    total += point.column + point.row; // we add point.row to add in all newline characters
-    return total;
   },
 };
 
@@ -332,9 +323,7 @@ var KiteIncoming = {
     }
     return null;
   },
-
 };
-
 
 module.exports = {
   outgoing: KiteOutgoing,
@@ -348,5 +337,16 @@ module.exports = {
 
     // focus is tracked at the workspace level.
     atom.workspace.onDidChangeActivePaneItem(this.outgoing.onFocus.bind(this.outgoing));
+  },
+  completions: function() {
+    return completions;
+  },
+  config: {
+    enableCompletions: {
+      type: "boolean",
+      default: false,
+      title: "Enable Completions",
+      description: "Show auto-completions from Kite as Atom suggestions",
+    },
   },
 };
