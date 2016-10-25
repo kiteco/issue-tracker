@@ -15,8 +15,12 @@ import traceback
 import hashlib
 import base64
 
-
 PYTHON_VERSION = sys.version_info[0]
+
+if PYTHON_VERSION >= 3:
+    from queue import Queue, Full
+else:
+    from Queue import Queue, Full
 
 FIX_APPLY_ERROR = """It is with great regret we must inform you that we cannot apply the suggested fix. Please contact support@kite.com if the problem persists.
 
@@ -30,93 +34,18 @@ KITED_HOSTPORT = "127.0.0.1:46624"
 EVENT_ENDPOINT = "/clientapi/editor/event"
 ERROR_ENDPOINT = "/clientapi/editor/error"
 COMPLETIONS_ENDPOINT = "/clientapi/editor/completions"
-
-# Timeout for HTTP requests (in seconds). Note: Sublime will complain if
-# any EventListener handler takes more than 0.1 seconds. So, we set the timeout
-# to 0.09 seconds.
-HTTP_TIMEOUT = 0.09
+HTTP_TIMEOUT = 0.09  # timeout for HTTP requests in seconds
+EVENT_QUEUE_SIZE = 3  # very small queue capacity because we want to throw away old events
 
 VERBOSE = False
 ENABLE_COMPLETIONS = False
 
 
-class SublimeKite(sublime_plugin.EventListener, threading.Thread):
-    # Path to outgoing socket
-    SOCK_PATH = os.path.expandvars("$HOME/.kite/kite.sock")
-    SOCK_BUF_SIZE = 2 << 20  # 2MB
-
-    # Plugin ID set by run() below
-    PLUGIN_ID = ""
-
-    # Implements run from threading.Thread. This is used for reading from
-    # the domain socket via _read_loop()
-    def run(self):
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        sock.bind(('127.0.0.1', 0))
-        _, port = sock.getsockname()
-        self.PLUGIN_ID = "udp://127.0.0.1:%d" % port
-
-        while True:
-            try:
-                self._read_loop(sock)
-            except Exception as e:
-                print("read loop exception: %s" % e)
-
-    def _read_loop(self, sock):
-        while True:
-            data = sock.recv(self.SOCK_BUF_SIZE)
-            if PYTHON_VERSION >= 3:
-                suggestion = json.loads(data.decode())
-            else:
-                suggestion = json.loads(data)
-
-            if suggestion['type'] == "apply":
-                sublime.set_timeout(
-                    lambda: self.apply_suggestion(suggestion), 0)
-            elif suggestion['type'] == "highlight":
-                sublime.set_timeout(
-                    lambda: self.highlight_suggestion(suggestion), 0)
-            elif suggestion['type'] == "clear":
-                sublime.set_timeout(
-                    lambda: self.clear_suggestion(suggestion), 0)
-
-    def _region_key(self):
-        return "kite_highlight"
-
-    def apply_suggestion(self, suggestion):
-        adj = 0
-        view = sublime.active_window().active_view()
-        file_md5 = hash_contents(view)
-
-        remote_md5 = suggestion.get('file_md5', '')
-        if remote_md5 == '' or remote_md5 == file_md5:
-            for diff in suggestion['diffs']:
-                # Compute adjustments so subsequent diffs apply correctly
-                diff['begin'] += adj
-                diff['end'] += adj
-                adj += len(diff['destination']) - len(diff['source'])
-                view.run_command('apply_suggestion', diff)
-        else:
-            msg = "error: local hash (%s) != remote hash (%s)" % (file_md5, remote_md5)
-            self._error(msg)
-            sublime.error_message(FIX_APPLY_ERROR)
-
-        # Remove all highlights
-        key = self._region_key()
-        view.erase_regions(key)
-
-    def highlight_suggestion(self, suggestion):
-        view = sublime.active_window().active_view()
-        for diff in suggestion['diffs']:
-            key = self._region_key()
-            view.add_regions(key, [sublime.Region(diff['begin'], diff['end'])],
-                             "invalid", "dot", 0)
-
-    def clear_suggestion(self, suggestion):
-        view = sublime.active_window().active_view()
-        for diff in suggestion['diffs']:
-            key = self._region_key()
-            view.erase_regions(key)
+class SublimeKite(sublime_plugin.EventListener):
+    def __init__(self):
+        self._event_queue = Queue(maxsize=EVENT_QUEUE_SIZE)
+        self._event_thread = threading.Thread(target=self._event_loop)
+        self._event_thread.start()
 
     def on_modified(self, view):
         """
@@ -158,7 +87,9 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
             return
 
         resp = self._http_roundtrip(COMPLETIONS_ENDPOINT, {
-            "hash": hash_contents(view),
+            "source": SOURCE,
+            "filename": realpath(view.file_name()),
+            "text": view.substr(sublime.Region(0, view.size())),
             "cursor": locations[0],
         })
         verbose("completions response:", resp)
@@ -196,14 +127,17 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
             action = 'skip'
             full_text = 'file_too_large'
 
-        self._http_roundtrip(EVENT_ENDPOINT, {
-            'source': SOURCE,
-            'action': action,
-            'filename': realpath(view.file_name()),
-            'selections': selections,
-            'text': full_text,
-            'pluginId': self.PLUGIN_ID,
-        })
+        try:
+            self._event_queue.put({
+                'source': SOURCE,
+                'action': action,
+                'filename': realpath(view.file_name()),
+                'selections': selections,
+                'text': full_text,
+                'pluginId': '',
+            }, block=False)
+        except Full:
+            verbose("event queue was full")
 
     def _error(self, msg):
         view = sublime.active_window().active_view()
@@ -213,6 +147,11 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
             'message': msg,
         })
         print(msg)
+
+    def _event_loop(self):
+        while True:
+            payload = self._event_queue.get(block=True)
+            self._http_roundtrip(EVENT_ENDPOINT, payload)
 
     def _http_roundtrip(self, endpoint, payload):
         """
@@ -243,11 +182,6 @@ class SublimeKite(sublime_plugin.EventListener, threading.Thread):
         except Exception as ex:
             print("error during http roundtrip to %s: %s" % (endpoint, ex))
             return None
-
-
-class ApplySuggestionCommand(sublime_plugin.TextCommand):
-    def run(self, edit, begin=None, end=None, destination=None, **kwargs):
-        self.view.replace(edit, sublime.Region(begin, end), destination)
 
 
 def realpath(p):
