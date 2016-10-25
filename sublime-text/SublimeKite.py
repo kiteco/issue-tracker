@@ -40,6 +40,7 @@ EVENT_QUEUE_SIZE = 3  # very small queue capacity because we want to throw away 
 VERBOSE = False
 ENABLE_COMPLETIONS = False
 
+
 class SublimeKite(sublime_plugin.EventListener):
     def __init__(self):
         self._event_queue = Queue(maxsize=EVENT_QUEUE_SIZE)
@@ -50,7 +51,6 @@ class SublimeKite(sublime_plugin.EventListener):
         """
         on_modified is called by sublime when the buffer contents are edited
         """
-        print("at on_modified")
         self._update('edit', view)
 
     def on_selection_modified(self, view):
