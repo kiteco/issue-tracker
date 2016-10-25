@@ -1,6 +1,8 @@
 import sys
 import unittest
-from unittest.mock import patch, Mock, MagicMock
+
+if sys.version[0] >= 3:
+	from unittest.mock import patch, Mock, MagicMock
 
 class View(object):
 	"""No need to mock this one because it is simpler just to do explicitly."""
