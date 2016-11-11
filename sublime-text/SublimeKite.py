@@ -2,30 +2,27 @@
 # are not guaranteed to persist.
 from __future__ import print_function
 
-import json
 import os
-import pprint
+import sys
+import json
+import threading
+
 import sublime
 import sublime_plugin
-import socket
-import sys
-import time
-import threading
-import traceback
-import hashlib
-import base64
 
-PYTHON_VERSION = sys.version_info[0]
+PYTHON3 = sys.version_info >= (3,)
 
-if PYTHON_VERSION >= 3:
+if PYTHON3:
     from queue import Queue, Full
 else:
     from Queue import Queue, Full
 
-FIX_APPLY_ERROR = """It is with great regret we must inform you that we cannot apply the suggested fix. Please contact support@kite.com if the problem persists.
-
-- Kite Team
-"""
+FIX_APPLI_ERROR = (
+    'It is with great regret we must inform you that we cannot apply the '
+    'suggested fix. Please contact support@kite.com if the problem persists.'
+    ''
+    '- Kite Team'
+)
 
 SUBLIME_VERSION = str(sublime.version())[0]
 SOURCE = 'sublime%s' % SUBLIME_VERSION
@@ -35,7 +32,7 @@ EVENT_ENDPOINT = "/clientapi/editor/event"
 ERROR_ENDPOINT = "/clientapi/editor/error"
 COMPLETIONS_ENDPOINT = "/clientapi/editor/completions"
 HTTP_TIMEOUT = 0.09  # timeout for HTTP requests in seconds
-EVENT_QUEUE_SIZE = 3  # very small queue capacity because we want to throw away old events
+EVENT_QUEUE_SIZE = 3  # small queue because we want to throw away old events
 
 VERBOSE = False
 ENABLE_COMPLETIONS = False
@@ -62,28 +59,30 @@ class SublimeKite(sublime_plugin.EventListener):
 
     def on_activated(self, view):
         """
-        on_activated is called by sublime when the user switches to this file (or
-        switches windows to sublime)
+        on_activated is called by sublime when the user switches to this file
+        (or switches windows to sublime)
         """
         self._update('focus', view)
 
     def on_deactivated(self, view):
         """
-        on_deactivated is called by sublime when the user switches file (or switches
-        windows to sublime)
+        on_deactivated is called by sublime when the user switches file
+        (or switches windows to sublime)
         """
         self._update('lost_focus', view)
 
     def on_query_completions(self, view, prefix, locations):
         """
-        on_query_completions is called when sublime is about to show completions
+        on_query_completions is called when sublime is about to show completions  # noqa
         """
         if not ENABLE_COMPLETIONS:
             return
 
         # do not attempt multi-location completions for now
         if len(locations) != 1:
-            verbose("ignoring request for completions with %d locations" % len(locations))
+            verbose("ignoring request for completions with %d locations" % len(
+                locations)
+            )
             return
 
         resp = self._http_roundtrip(COMPLETIONS_ENDPOINT, {
@@ -123,7 +122,7 @@ class SublimeKite(sublime_plugin.EventListener):
         selections = [{'start': r.a, 'end': r.b} for r in view.sel()]
 
         # skip content over 1mb
-        if len(full_text) > (1 << 20): # 1mb
+        if len(full_text) > (1 << 20):  # 1mb
             action = 'skip'
             full_text = 'file_too_large'
 
@@ -162,9 +161,11 @@ class SublimeKite(sublime_plugin.EventListener):
             verbose("sending to", endpoint, ":", payload)
             req = json.dumps(payload)
 
-            if PYTHON_VERSION >= 3:
+            if PYTHON3:
                 import http.client
-                conn = http.client.HTTPConnection(KITED_HOSTPORT, timeout=HTTP_TIMEOUT)
+                conn = http.client.HTTPConnection(
+                    KITED_HOSTPORT, timeout=HTTP_TIMEOUT
+                )
                 conn.request("POST", endpoint, body=req.encode('utf-8'))
                 response = conn.getresponse()
                 resp = response.read().decode('utf-8')
