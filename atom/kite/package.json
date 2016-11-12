@@ -8,7 +8,10 @@
   "engines": {
     "atom": ">=1.0.0 <2.0.0"
   },
-  "dependencies": {},
+  "dependencies": {
+    "dialogs": "^1.1.16",
+    "kite-installer": "kite-installer"
+  },
   "providedServices": {
     "autocomplete.provider": {
       "versions": {
