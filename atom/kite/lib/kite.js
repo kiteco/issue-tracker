@@ -7,7 +7,6 @@ var ready = require('./ready.js');
 
 module.exports = {
   activate: function() {
-    console.log("at kite.activate");
     // observeTextEditors takes a callback that fires whenever a new
     // editor window is created. We use this to call "observeEditor",
     // which registers edit/selection based callbacks.
@@ -16,7 +15,6 @@ module.exports = {
     // focus is tracked at the workspace level.
     atom.workspace.onDidChangeActivePaneItem(events.onFocus);
 
-    console.log("calling ready.ensure...");
     ready.ensure();
   },
   completions: function() {

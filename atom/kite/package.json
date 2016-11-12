@@ -9,7 +9,6 @@
     "atom": ">=1.0.0 <2.0.0"
   },
   "dependencies": {
-    "dialogs": "^1.1.16",
     "kite-installer": "kite-installer"
   },
   "providedServices": {
