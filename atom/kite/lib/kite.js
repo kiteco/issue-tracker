@@ -1,12 +1,15 @@
 // Contents of this plugin will be reset by Kite on start. Changes you make
 // are not guaranteed to persist.
 
-var events = require('./events.js')
-var completions = require('./completions.js');
-var ready = require('./ready.js');
+const metrics = require('./metrics.js');
+const events = require('./events.js');
+const completions = require('./completions.js');
+const ready = require('./ready.js');
 
 module.exports = {
   activate: function() {
+    metrics.track(metrics.events.ACTIVATE);
+
     // observeTextEditors takes a callback that fires whenever a new
     // editor window is created. We use this to call "observeEditor",
     // which registers edit/selection based callbacks.
