@@ -1,8 +1,11 @@
+var os = require('os');
 const mixpanel = require('mixpanel');
 const crypto = require('crypto');
 const kitePkg = require('../package.json');
 
 const MIXPANEL_TOKEN = '2ab52cc896c9c74a7452d65f00e4f938';
+
+const OS_VERSION = os.type() + ' ' + os.release();
 
 const client = mixpanel.init(MIXPANEL_TOKEN, {
   protocol: 'https',
@@ -17,10 +20,9 @@ var events = {
 function distinctID() {
   var id = atom.config.get('kite.distinctID');
   if (id === undefined) {
-    id = btoa(crypto.randomBytes(64));
+    id = crypto.randomBytes(32).toString('hex');
     atom.config.set('kite.distinctID', id);
   }
-  console.log("id:", id);
   return id;
 }
 
@@ -35,6 +37,7 @@ function track(eventName, properties) {
       distinct_id: distinctID(),
       atom_version: atom.getVersion(),
       kite_plugin_version: kitePkg.version,
+      os: OS_VERSION,
   };
   if (properties !== undefined) {
     for (var key in properties) {
@@ -43,3 +46,7 @@ function track(eventName, properties) {
   }
   client.track(eventName, properties);
 }
+
+module.exports = {
+  track: track,
+};

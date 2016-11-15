@@ -7,7 +7,7 @@ const StateController = require('kite-installer/lib/state-controller.js');
 var Ready = {
   currentPath: function() {
     var editor = atom.workspace.getActivePaneItem();
-    if (editor === undefined) {
+    if (editor === undefined || editor.buffer == undefined || editor.buffer.file == undefined) {
       return null;
     }
     return editor.buffer.file.path;
@@ -37,7 +37,9 @@ var Ready = {
           this.warnNotAuthenticated();
           break;
         case StateController.STATES.AUTHENTICATED:
-          this.warnNotWhitelisted(curpath);
+          if (curpath !== null) {
+            this.warnNotWhitelisted(curpath);
+          }
           break;
         case StateController.STATES.WHITELISTED:
           metrics.track("kite is ready");
@@ -88,7 +90,7 @@ var Ready = {
       this.launch();
     }, (err) => {
       // installation failed, show an error notification
-      metrics.track("download-and-install failed");
+      metrics.track("download-and-install failed", err);
       var notification = atom.notifications.addError("Unable to install Kite", {
         description: JSON.stringify(err),
         dismissable: true,
@@ -119,7 +121,6 @@ var Ready = {
         text: "Start Kite",
         onDidClick: () => {
           metrics.track("start button clicked (via not-running warning)");
-          notification.dismiss();
           this.launch();
         }
       }]
@@ -138,7 +139,7 @@ var Ready = {
         this.ensure();
       }, 5000);
     }, (err) => {
-      metrics.track("launch failed");
+      metrics.track("launch failed", err);
       var notification = atom.notifications.addError("Unable to start Kite autocomplete daemon", {
         description: JSON.stringify(err),
         dismissable: true,
@@ -146,7 +147,6 @@ var Ready = {
           text: "Retry",
           onDidClick: () => {
             metrics.track("retry button clicked (via launch error)");
-            notification.dismiss();
             this.launch();
           }
         }]
@@ -179,7 +179,6 @@ var Ready = {
         text: "Login",
         onDidClick: () => {
           metrics.track("login button clicked (via not-authenticated warning)");
-          notification.dismiss();
           this.authenticate();
         }
       }]
@@ -200,7 +199,7 @@ var Ready = {
       metrics.track("authentication succeeded");
       this.ensure();
     }, (err) => {
-      metrics.track("authentication failed");
+      metrics.track("authentication failed", err);
       var notification = atom.notifications.addError("Unable to login", {
         description: JSON.stringify(err),
         dismissable: true,
@@ -208,12 +207,12 @@ var Ready = {
           text: "Retry",
           onDidClick: () => {
             metrics.track("retry button clicked (via authentication error)");
-            notification.dismiss();
             this.authenticate();
           }
-        }]).onDidDismiss(() => {
-          metrics.track("authentication error dismissed");
-        });
+        }]
+      });
+      notification.onDidDismiss(() => {
+        metrics.track("authentication error dismissed");
       });
     });
   },
@@ -231,7 +230,6 @@ var Ready = {
         text: "Enable Kite for "+dir,
         onDidClick: () => {
           metrics.track("enable button clicked (via not-whitelisted warning)", {dir: dir});
-          notification.dismiss();
           this.whitelist(dir);
         }
       }]
@@ -255,11 +253,11 @@ var Ready = {
           text: "Retry",
           onDidClick: () => {
             metrics.track("retry clicked (via whitelisting-failed error)", {dir: dirpath});
-            notification.dismiss();
             this.whitelist(dirpath);
           }
         }]
-      }).onDidDismiss(() => {
+      });
+      notification.onDidDismiss(() => {
         metrics.track("whitelisting error dismissed");
       });
     });

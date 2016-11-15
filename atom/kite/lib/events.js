@@ -1,11 +1,13 @@
-var fs = require('fs');
-var http = require('http');
-var utils = require('./utils.js');
+const fs = require('fs');
+const http = require('http');
+const utils = require('./utils.js');
+const metrics = require('./metrics.js');
+const ready = require('./ready.js');
 
-var DEBUG = false;
+const DEBUG = false;
 
 // MAX_PAYLOAD_SIZE is the maximum length for a POST reqest body
-var MAX_PAYLOAD_SIZE = 2 << 20;
+const MAX_PAYLOAD_SIZE = 2 << 20;
 
 // Outgoing contains logic for sending events to Kite in response to
 // editor actions. We track edit, selections, and focus. These events
@@ -86,6 +88,10 @@ function httpRoundTrip(endpoint, obj) {
   };
 
   var req = http.request(options);
+  req.on('error', () => {
+    metrics.track("http connection failed", options);
+    ready.ensure();
+  });
   req.write(payload);
   req.end();
 }
