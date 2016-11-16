@@ -2,6 +2,7 @@ var os = require('os');
 const mixpanel = require('mixpanel');
 const crypto = require('crypto');
 const kitePkg = require('../package.json');
+const localconfig = require('./localconfig.js');
 
 const MIXPANEL_TOKEN = '2ab52cc896c9c74a7452d65f00e4f938';
 
@@ -18,10 +19,10 @@ var events = {
 
 // Generate a unique ID for this user and save it for future use.
 function distinctID() {
-  var id = atom.config.get('kite.distinctID');
+  var id = localconfig.get('distinctID');
   if (id === undefined) {
     id = crypto.randomBytes(32).toString('hex');
-    atom.config.set('kite.distinctID', id);
+    localconfig.set('distinctID', id);
   }
   return id;
 }
