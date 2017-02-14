@@ -10,6 +10,7 @@
 
 
 import com.intellij.execution.process.*;
+import com.intellij.openapi.application.ApplicationInfo;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ApplicationNamesInfo;
 import com.intellij.openapi.application.Result;
@@ -36,6 +37,9 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import java.io.*;
 import java.math.BigInteger;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.util.*;
 import java.util.List;
@@ -113,6 +117,21 @@ public class KiteProjectComponent implements ProjectComponent, DocumentListener,
         });
         EditorFactory.getInstance().getEventMulticaster().addDocumentListener(this, m_project);
         EditorFactory.getInstance().getEventMulticaster().addCaretListener(this, m_project);
+
+
+        try {
+            String url = "https://plugins.kite.com/intellij_version/" +
+                    URLEncoder.encode(ApplicationInfo.getInstance().getFullVersion(), "UTF-8") + "/" +
+                    URLEncoder.encode(ApplicationInfo.getInstance().getBuild().asStringWithAllDetails(), "UTF-8");
+
+            URL obj = new URL(url);
+            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+            con.getResponseCode();
+            con.disconnect();
+        } catch(Exception e) {
+            // do nothing
+            // (this is a temporary experiment)
+        }
     }
 
     @Override
