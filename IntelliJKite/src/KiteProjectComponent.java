@@ -120,15 +120,24 @@ public class KiteProjectComponent implements ProjectComponent, DocumentListener,
 
 
         try {
+            String buildString = "";
+            try {
+                buildString = URLEncoder.encode(
+                        ApplicationInfo.getInstance().getBuild().asStringWithAllDetails(), "UTF-8");
+            } catch(Throwable e) {
+                // some older versions of PyCharm/IntelliJ don't have `asStringWithAllDetails`.
+                // we have to catch Throwable because NoSuchMethodError does not inherit from Exception
+            }
+
             String url = "https://plugins.kite.com/intellij_version/" +
                     URLEncoder.encode(ApplicationInfo.getInstance().getFullVersion(), "UTF-8") + "/" +
-                    URLEncoder.encode(ApplicationInfo.getInstance().getBuild().asStringWithAllDetails(), "UTF-8");
+                    buildString;
 
             URL obj = new URL(url);
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
             con.getResponseCode();
             con.disconnect();
-        } catch(Exception e) {
+        } catch(Throwable e) {
             // do nothing
             // (this is a temporary experiment)
         }
