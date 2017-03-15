@@ -17,7 +17,7 @@ KITED_HOSTPORT = "127.0.0.1:46624"
 EVENT_ENDPOINT = "/clientapi/editor/event"
 HTTP_TIMEOUT = 0.09  # timeout for HTTP requests in seconds
 
-LOG_FILE = "~/.kite/logs/vim-plugin.log"
+LOG_FILE = os.path.expanduser("~/.kite/logs/vim-plugin.log")
 VERBOSE = False
 
 
@@ -26,7 +26,7 @@ def log(*args):
     Print a log message
     """
     try:
-        with open(os.path.expanduser(LOG_FILE), "a") as f:
+        with open(LOG_FILE, "a") as f:
             f.write(" ".join(map(str, args)) + "\n")
     except:
         pass
