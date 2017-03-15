@@ -95,7 +95,7 @@ def send_event(action, filename):
     try:
         http_roundtrip(EVENT_ENDPOINT, event)
     except Exception as ex:
-        verbose("error during http roundtrip to %s: %s" % (endpoint, ex))
+        verbose("error during http roundtrip to %s: %s" % (EVENT_ENDPOINT, ex))
 
 
 send_event(vim.eval("a:action"), vim.eval("l:filename"))
