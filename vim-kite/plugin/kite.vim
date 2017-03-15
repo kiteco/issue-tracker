@@ -96,10 +96,7 @@ def send_event(action, filename):
         event['action'] = 'skip'
         event['text'] = 'file_too_large'
 
-    try:
-        http_roundtrip(EVENT_ENDPOINT, event)
-    except Exception as e:
-        pass
+    http_roundtrip(EVENT_ENDPOINT, event)
 
 
 send_event(vim.eval("a:action"), vim.eval("l:filename"))
