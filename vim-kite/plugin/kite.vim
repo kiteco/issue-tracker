@@ -56,28 +56,24 @@ def http_roundtrip(endpoint, payload):
     """
     Send a json payload to kited at the specified endpoint
     """
-    try:
-        verbose("sending to", endpoint, ":", payload)
-        req = json.dumps(payload)
+    verbose("sending to", endpoint, ":", payload)
+    req = json.dumps(payload)
 
-        if PYTHON3:
-            import http.client
-            conn = http.client.HTTPConnection(KITED_HOSTPORT, timeout=HTTP_TIMEOUT)
-            conn.request("POST", endpoint, body=req.encode('utf-8'))
-            response = conn.getresponse()
-            resp = response.read().decode('utf-8')
-            conn.close()
-        else:
-            import urllib2
-            url = "http://" + KITED_HOSTPORT + endpoint
-            conn = urllib2.urlopen(url, data=req, timeout=HTTP_TIMEOUT)
-            resp = conn.read()
-            conn.close()
+    if PYTHON3:
+        import http.client
+        conn = http.client.HTTPConnection(KITED_HOSTPORT, timeout=HTTP_TIMEOUT)
+        conn.request("POST", endpoint, body=req.encode('utf-8'))
+        response = conn.getresponse()
+        resp = response.read().decode('utf-8')
+        conn.close()
+    else:
+        import urllib2
+        url = "http://" + KITED_HOSTPORT + endpoint
+        conn = urllib2.urlopen(url, data=req, timeout=HTTP_TIMEOUT)
+        resp = conn.read()
+        conn.close()
 
-        verbose("response was:", resp)
-
-    except Exception as ex:
-        verbose("error during http roundtrip to %s: %s" % (endpoint, ex))
+    verbose("response was:", resp)
 
 
 def send_event(action, filename):
@@ -96,7 +92,10 @@ def send_event(action, filename):
         event['action'] = 'skip'
         event['text'] = 'file_too_large'
 
-    http_roundtrip(EVENT_ENDPOINT, event)
+    try:
+        http_roundtrip(EVENT_ENDPOINT, event)
+    except Exception as ex:
+        verbose("error during http roundtrip to %s: %s" % (endpoint, ex))
 
 
 send_event(vim.eval("a:action"), vim.eval("l:filename"))
