@@ -1,6 +1,5 @@
 " This plugin sets up a few event handlers that allow it to function with Kite
 
-
 function! PyKiteEvent(action)
     let l:filename = expand("%:p")
     let l:nvim = has('nvim')
@@ -8,14 +7,23 @@ KitePython << endpython
 import vim
 import os
 import json
+import threading
 
 
 PYTHON3 = sys.version_info >= (3,)
+
+if PYTHON3:
+    from queue import Queue, Full
+else:
+    from Queue import Queue, Full
+
+
 SOURCE = 'nvim' if int(vim.eval('l:nvim')) else 'vim'
 
 KITED_HOSTPORT = "127.0.0.1:46624"
 EVENT_ENDPOINT = "/clientapi/editor/event"
 HTTP_TIMEOUT = 0.09  # timeout for HTTP requests in seconds
+EVENT_QUEUE_SIZE = 3  # small queue because we want to throw away old events
 
 LOG_FILE = os.path.expanduser("~/.kite/logs/vim-plugin.log")
 VERBOSE = False
@@ -41,43 +49,65 @@ def verbose(*args):
 
 
 def cursor_pos(buf, pos):
+    """
+    Get the cursor position as an offset from the beginning of the file
+    """
     (line, col) = pos
     return sum(len(l) for l in buf[:line-1]) + col + (line-1)
 
 
 def realpath(p):
+    """
+    Evaluate any symlinks and return a symlink-free path
+    """
     try:
         return os.path.realpath(p)
     except:
         return p
 
 
+def event_loop():
+    """
+    Read events from the event queue and send them to kited via HTTP
+    """
+    while True:
+        http_roundtrip(EVENT_ENDPOINT, event_queue.get(block=True))
+
+
 def http_roundtrip(endpoint, payload):
     """
     Send a json payload to kited at the specified endpoint
     """
-    verbose("sending to", endpoint, ":", payload)
-    req = json.dumps(payload)
+    try:
+        verbose("sending to", endpoint, ":", payload)
+        req = json.dumps(payload)
 
-    if PYTHON3:
-        import http.client
-        conn = http.client.HTTPConnection(KITED_HOSTPORT, timeout=HTTP_TIMEOUT)
-        conn.request("POST", endpoint, body=req.encode('utf-8'))
-        response = conn.getresponse()
-        resp = response.read().decode('utf-8')
-        conn.close()
-    else:
-        import urllib2
-        url = "http://" + KITED_HOSTPORT + endpoint
-        conn = urllib2.urlopen(url, data=req, timeout=HTTP_TIMEOUT)
-        resp = conn.read()
-        conn.close()
+        if PYTHON3:
+            import http.client
+            conn = http.client.HTTPConnection(KITED_HOSTPORT, timeout=HTTP_TIMEOUT)
+            conn.request("POST", endpoint, body=req.encode('utf-8'))
+            response = conn.getresponse()
+            resp = response.read().decode('utf-8')
+            conn.close()
+        else:
+            import urllib2
+            url = "http://" + KITED_HOSTPORT + endpoint
+            conn = urllib2.urlopen(url, data=req, timeout=HTTP_TIMEOUT)
+            resp = conn.read()
+            conn.close()
 
-    verbose("response was:", resp)
+        verbose("response was:", resp)
+
+    except Exception as ex:
+        verbose("error during http roundtrip to %s: %s" % (endpoint, ex))
+        return None
 
 
-def send_event(action, filename):
-    verbose("at send_event:", action)
+def enqueue_event(action, filename):
+    """
+    Add an event for the current buffer state to the outgoing queue
+    """
+    verbose("at enqueue_event:", action)
     pos = cursor_pos(list(vim.current.buffer), vim.current.window.cursor)
 
     event = {
@@ -93,12 +123,18 @@ def send_event(action, filename):
         event['text'] = 'file_too_large'
 
     try:
-        http_roundtrip(EVENT_ENDPOINT, event)
-    except Exception as ex:
-        verbose("error during http roundtrip to %s: %s" % (EVENT_ENDPOINT, ex))
+        event_queue.put(event, block=False)
+    except Full:
+        verbose("event queue was full")
 
 
-send_event(vim.eval("a:action"), vim.eval("l:filename"))
+# start the outgoing event loop
+event_queue = Queue(maxsize=EVENT_QUEUE_SIZE)
+event_thread = threading.Thread(target=event_loop)
+event_thread.start()
+
+
+enqueue_event(vim.eval("a:action"), vim.eval("l:filename"))
 endpython
 endfunction
 
