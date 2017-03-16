@@ -71,7 +71,11 @@ def event_loop():
     Read events from the event queue and send them to kited via HTTP
     """
     while True:
-        http_roundtrip(EVENT_ENDPOINT, event_queue.get(block=True))
+        ev = event_queue.get(block=True)
+        if ev == None:  # this is the stop signal
+            verbose("event_queue recieved stop signal")
+            break
+        http_roundtrip(EVENT_ENDPOINT, ev)
 
 
 def http_roundtrip(endpoint, payload):
@@ -129,14 +133,29 @@ def enqueue_event(action, filename):
 
 
 # start the outgoing event loop
-event_queue = Queue(maxsize=EVENT_QUEUE_SIZE)
-event_thread = threading.Thread(target=event_loop)
-event_thread.start()
-
+try:
+    event_queue
+except NameError:
+    verbose("starting event queue...")
+    event_queue = Queue(maxsize=EVENT_QUEUE_SIZE)
+    event_thread = threading.Thread(target=event_loop)
+    event_thread.start()
 
 enqueue_event(vim.eval("a:action"), vim.eval("l:filename"))
+
 endpython
 endfunction
+
+
+function! PyKiteShutdown()
+KitePython << endpython
+
+verbose("sending stop signal to event_queue")
+event_queue.put(None, block=False)
+
+endpython
+endfunction
+
 
 " use a version of python that exists in the current vim build
 if has('python')
@@ -147,6 +166,7 @@ endif
 
 if has('python') || has('python3')
     augroup KitePlugin
+        autocmd VimLeavePre  * :call PyKiteShutdown()
         autocmd CursorMoved  * :call PyKiteEvent('selection')
         autocmd CursorMovedI * :call PyKiteEvent('edit')
         autocmd BufEnter     * :call PyKiteEvent('focus')
