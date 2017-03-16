@@ -6,7 +6,7 @@
 ;; * log errors in a way that we will be able to give users instructions to find them
 ;; * disable self if anything goes wrong
 
-(defvar kite-max-payload-size 2097152 "Max number of chars to send in one UDP packet.")
+(defvar kite-max-payload-size 2097152 "Max number of chars to send in one HTTP request.")
 
 (defvar kite-in-hook nil "True if we are currently in a hook (prevents infinite loops).")
 
