@@ -129,13 +129,9 @@
     (let ((url-request-method "POST")
         (url-request-extra-headers '(("Content-Type" . "application/json")))
         (url-request-data payload))
-      (url-retrieve-synchronously "http://127.0.0.1:46624/clientapi/editor/event" 'kite-kill-url-buffer))
+      (url-retrieve "http://127.0.0.1:46624/clientapi/editor/event"
+        (lambda (status) (kill-buffer (current-buffer))) () t))
     (kite-log "unable to send message because length exceeded limit")))
-
-(defun kite-kill-url-buffer (status)
-  "Kill the buffer returned by `url-retrieve'."
-  (message "at kite-kill-url-buffer")
-  (kill-buffer (current-buffer)))
 
 ;;
 ;; Hooks
