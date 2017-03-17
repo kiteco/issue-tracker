@@ -10,8 +10,7 @@ var PLUGIN_ID = null;
 const SOURCE = "vscode";
 const MAX_TEXT_SIZE = Math.pow(2, 20);
 
-console.log("at kite module");
-
+// Called when VSCode is started
 function activate (context) {
   console.log("kite activating");
   let eventController = new KiteEventController();

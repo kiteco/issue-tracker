@@ -1,6 +1,6 @@
 # VSCode plugin for Kite
 
-KiteCode is a plugin that integrates Kite, the programming assistant into
+KiteCode is a plugin that integrates Kite, the programming assistant, into
 Visual Studio code. Kite will automagically suggest library usages, point out
 syntactic errors, and will generally work with you to make (Python)
 development less painful.
@@ -18,4 +18,4 @@ npm install
 make install   # will copy files into your ~/.vscode dir
 ```
 
-Then start vscode and you should see Kite in the list of extensions.
+Then start vscode and you should see KiteCode in the list of extensions.
