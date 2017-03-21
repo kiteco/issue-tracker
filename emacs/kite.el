@@ -123,14 +123,20 @@
   (kite-marshal (list (cons "source" "emacs")
                       (cons "action" "surface"))))
 
+(defun kite-url-retrieve (url callback)
+  "Wrapper around url-retrieve that handles API change in emacs >= 23"
+  (if (<= emacs-major-version 22)
+    (url-retrieve url callback)
+    (url-retrieve url callback () t)))  ; the third parameter means "quiet"
+
 (defun kite-send (payload)
   "Send message to kited via HTTP POST"
   (if (< (length payload) kite-max-payload-size)
     (let ((url-request-method "POST")
         (url-request-extra-headers '(("Content-Type" . "application/json")))
         (url-request-data payload))
-      (url-retrieve "http://127.0.0.1:46624/clientapi/editor/event"
-        (lambda (status) (kill-buffer (current-buffer))) () t))
+      (kite-url-retrieve "http://127.0.0.1:46624/clientapi/editor/event"
+        (lambda (status) (kill-buffer (current-buffer)))))
     (kite-log "unable to send message because length exceeded limit")))
 
 ;;
