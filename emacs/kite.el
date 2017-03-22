@@ -6,11 +6,7 @@
 ;; * log errors in a way that we will be able to give users instructions to find them
 ;; * disable self if anything goes wrong
 
-(defvar kite-plugin-id
-  (concat "emacs_"  emacs-version  "_" (number-to-string (emacs-pid)))
-  "id of this elisp plugin.")
-
-(defvar kite-max-packet-size 262143 "Max number of chars to send in one UDP packet.")
+(defvar kite-max-payload-size 2097152 "Max number of chars to send in one HTTP request.")
 
 (defvar kite-in-hook nil "True if we are currently in a hook (prevents infinite loops).")
 
@@ -18,10 +14,6 @@
   "Holds the cursor position from the last run of post-command-hooks.")
 
 (make-variable-buffer-local 'kite-prev-point)
-
-(defvar kite-socket-path "~/.kite/kite.sock" "path to unix domain socket")
-
-(defvar kite-udswrite-path "~/.kite/emacs/udswrite" "path to udswrite binary")
 
 ;;
 ;; Logging
@@ -36,8 +28,7 @@
 ;;
 
 (defun kite-buffer-state-changed ()
-  "Determines whether the cursor position changed since the last call to
-  kite-checkpoint-buffer-state."
+  "Determines whether the cursor position changed since the last call to kite-checkpoint-buffer-state."
   (not (equal (point) kite-prev-point)))
 
 (defun kite-checkpoint-buffer-state ()
@@ -125,7 +116,6 @@
                       (cons "filename" (buffer-file-name (current-buffer)))
                       (cons "selections" (list (list (cons "start" (- (point) 1))
                                                      (cons "end" (- (point) 1)))))
-                      (cons "pluginId" kite-plugin-id)
                       (cons "text" (buffer-string))
                       )))
 
@@ -133,10 +123,20 @@
   (kite-marshal (list (cons "source" "emacs")
                       (cons "action" "surface"))))
 
-(defun kite-send (message)
-  "Check status of socket and send a message if possible"
-  (if (< (length message) kite-max-packet-size)
-      (call-process kite-udswrite-path nil nil nil (expand-file-name kite-socket-path) message)
+(defun kite-url-retrieve (url callback)
+  "Wrapper around url-retrieve that handles API change in emacs >= 23"
+  (if (<= emacs-major-version 22)
+    (url-retrieve url callback)
+    (url-retrieve url callback () t)))  ; the third parameter means "quiet"
+
+(defun kite-send (payload)
+  "Send message to kited via HTTP POST"
+  (if (< (length payload) kite-max-payload-size)
+    (let ((url-request-method "POST")
+        (url-request-extra-headers '(("Content-Type" . "application/json")))
+        (url-request-data payload))
+      (kite-url-retrieve "http://127.0.0.1:46624/clientapi/editor/event"
+        (lambda (status) (kill-buffer (current-buffer)))))
     (kite-log "unable to send message because length exceeded limit")))
 
 ;;
@@ -145,18 +145,24 @@
 
 (defun kite-handle-focus-in ()
   "Called when the user switches to the emacs window."
-  (if (not (kite-ignore-buffer))
+  (unless (kite-ignore-buffer)
+    (unless kite-in-hook
+      (setq kite-in-hook t)
       (kite-send (kite-message "focus"))
-    (kite-send (kite-surface))))
+      (kite-send (kite-surface))
+      (setq kite-in-hook nil))))
 
 (defun kite-handle-focus-out ()
   "Called when the user switches away from the emacs window."
   (unless (kite-ignore-buffer)
-    (kite-send (kite-message "lost_focus"))))
+    (unless kite-in-hook
+      (setq kite-in-hook t)
+      (kite-send (kite-message "lost_focus"))
+      (setq kite-in-hook nil))))
 
 (defun kite-handle-after-change (begin end oldlength)
-  (if (kite-ignore-buffer)
-      (kite-send (kite-surface))
+  "Called when the user modifies the state of a buffer"
+  (unless (kite-ignore-buffer)
     (unless kite-in-hook
       (setq kite-in-hook t)
       (kite-send (kite-message "edit"))
@@ -165,8 +171,7 @@
 
 (defun kite-handle-buffer-list-update ()
   "Called when the user switches between buffers."
-  (if (kite-ignore-buffer)
-      (kite-send (kite-surface))
+  (unless (kite-ignore-buffer)
     (unless kite-in-hook
       (setq kite-in-hook t)
       (kite-send (kite-message "selection"))
@@ -174,8 +179,7 @@
 
 (defun kite-handle-post-command ()
   "Called when the user issues any command"
-  (if (kite-ignore-buffer)
-      (kite-send (kite-surface))
+  (unless (kite-ignore-buffer)
     (unless kite-in-hook
       (setq kite-in-hook t)
       (when (kite-buffer-state-changed)
@@ -202,12 +206,12 @@
   (remove-hook 'focus-out-hook 'kite-handle-focus-out))
 
 (defun kite-init ()
-  "Setup Kite connection and hooks."
+  "Setup hooks."
   (interactive)
   (kite-add-hooks))
 
 (defun kite-stop ()
-  "Remove hooks and clean up socket."
+  "Remove hooks."
   (interactive)
   (kite-remove-hooks))
 
