@@ -8,6 +8,7 @@ Plugins for Kite are installed through the Kite application.  This repository us
 * [Atom](https://github.com/kiteco/atom-plugin)
 * [Sublime Text 3]()
 * [vim](https://github.com/kiteco/vim-plugin)
+* [emacs](https://github.com/kiteco/emacs-plugin)
 * (for IntelliJ and PyCharm, feel free to file issues on this repo.)
 
 For miscellaneous help topics, check out the [Kite Help Desk](http://help.kite.com/).
