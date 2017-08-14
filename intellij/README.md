@@ -84,6 +84,45 @@ The log data is available in the file opened by `Help -> Show Log in Finder`
 If the trace level of the logger-category kite.http is enabled then the log will contain the curl command lines to re-execute a kite request to simplify debugging.
 The trace level can be activated by entering `kite.http` as a new line in `Help -> Debug Log Settings`.
 
+#### Available channels
+These channels can be used in the `Debug Log Settings` dialog to get more verbose plugin log output:
+- #kite.action
+- #kite.action.delegate
+- #kite.action.delegateHandler
+- #kite.action.override
+- #kite.api
+- #kite.completions
+- #kite.eventQueue
+- #kite.http
+- #kite.http.script (trace only)
+- #kite.link.externalExample
+- #kite.link.linkListener
+- #kite.link.member
+- #kite.mixpanel
+- #kite.mockHttp
+- #kite.pebble
+- #kite.pebble.extension
+- #kite.platform
+- #kite.platform.exeDetector
+- #kite.platform.macExeDetector
+- #kite.platform.pathLauncher
+- #kite.renderUtil
+- #kite.rollbar
+- #kite.status.model
+- #kite.status.statusBarWidget
+- #kite.timing
+- #kite.ui
+- #kite.ui.SwingWorker
+- #kite.ui.autoPopup
+- #kite.ui.docPopupManager
+- #kite.ui.mouseOverManager
+- #kite.ui.quickDocProxy
+- #kite.ui.quickDocSupression
+- #kite.ui.signaturePopup
+- #kite.uil.htmlPopup
+- #kite.whitelisting
+- #kite.whitelisting.link
+
 ### Templates
 Kite responses are rendered using the Pebble template engine (http://www.mitchellbosecke.com/pebble/home).
 
@@ -184,6 +223,8 @@ See com.kite.mixpanel.MixpanelEvents for the implementation.
 - hover ui shown
 - expand panel ui shown
 - expand panel link clicked
+- signature panel ui shown
+    - popupMode = auto | manual
 - value link clicked
     - id
 - symbol link clicked
