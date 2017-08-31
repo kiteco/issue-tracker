@@ -192,6 +192,7 @@ The following filters are made available in addition to the built-in filters:
 - `kiteExternalLink`: This filter takes a value of tyep `string`, `Id`, `Value`, `ValueExt`, `Symbol` or `SymbolExt` and returns an URL which references the external documentation rendering as provided by kite.
 - `kiteInternalLink`: This filter takes a value of actionType `string`, `Id`, `Value`, `ValueExt`, `Symbol` or `SymbolExt` and returns an URL which linkes to the built-in view to show the details.
 - `kiteMembersLink`: This filter takes a value of actionType `string`, `Id`, `Value`, `ValueExt` and returns an URL which will open the list of members in the built-in view.
+- `kiteLinksLink`: This filter takes a value of actionType `string`, `Id`, `Value`, `ValueExt` and returns an URL which will open the list of links in the built-in view.
 - `kiteExample`: returns an url which will open the example in the web, e.g. `{{ example.id | kiteExample }}`
 - `kiteFilename`: returns just the filename of an input path, e.g. `{{ fullPath | kiteFilename }}`
 - `kiteSignatureInfoLink`: named parameters `expandCommonInvocations` and `argIndex`. Returns an URL which links to a signature information for the element at the current editor's cursor position.
@@ -236,7 +237,11 @@ See com.kite.mixpanel.MixpanelEvents for the implementation.
 - definition link clicked
     - path: The file path opened in the IDE
 - document reference clicked
-    - id: The #fragment part of the url, is interpreted as symbol 
+    - id: The #fragment part of the url, is interpreted as symbol
+- members link clicked
+    - id: The ID for which the members were retrieved
+- links link clicked
+    - id: The ID for which the links were retrieved
 - http link clicked
     - url: the full http url clicked
 
