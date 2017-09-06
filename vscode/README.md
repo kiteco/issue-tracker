@@ -1,6 +1,6 @@
 # Kite plugin for VSCode
 
-To use this plugin you must (download and install the Kite Engine)[https://kite.com].
+To use this plugin you must [download and install the Kite Engine](https://kite.com).
 
 ### Installation
 
