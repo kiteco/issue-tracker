@@ -98,8 +98,9 @@ These channels can be used in the `Debug Log Settings` dialog to get more verbos
 - #kite.link.externalExample
 - #kite.link.linkListener
 - #kite.link.member
-- #kite.mixpanel
 - #kite.mockHttp
+- #kite.monitoring
+- #kite.monitoring.preload
 - #kite.pebble
 - #kite.pebble.extension
 - #kite.platform
@@ -201,58 +202,8 @@ The following filters are made available in addition to the built-in filters:
 - `kiteColor`: named parameters `brighter` and `darker` which take tone levels, e.g. `{{ "#ffffff" | kiteColor("darker"=3) }}` will reduce the brightness of white by 3 tones
 - `kiteFileUrl`: named parameters `line`. Takes a string as input and returns an URL referencing it if it exists on the local file system. If it doesn't exist then null is returned. The parameter `line` is added query parameter, if defined.
 
-
-# Mixpanel events
-See com.kite.mixpanel.MixpanelEvents for the implementation.
-
-## Common properties of all events
-- *Mixpanel key:* Currently Test is used for test cases and users with the "isInternal" flag, Prod for all other users
-- *distinct_id*: The user id, if available. "unknown" if the kite user is not logged in or kite is not running
-- *os*: darwin | win | linux
-- *os_version*:
-- *os_arch*: x86 | x86_64
-- *editor_platform*: e.g. "IntelliJ IDEA" | "PyCharm Community Edition"
-- *editor_productCode*: e.g "IU" | "PC"
-- *editor_version*: e.g. "PC-163.10154.50"
-- *kite_plugin_version*: 1.1.0
-
-## Implemented events
-- kite plugin starting
-- kite plugin terminating
-- unsupported OS
-- unsupported os version
-- hover ui shown
-- expand panel ui shown
-- expand panel link clicked
-- signature panel ui shown
-    - popupMode = auto | manual
-- value link clicked
-    - id
-- symbol link clicked
-    - id
-- open in web
-    - id
-- open example in web
-    - id
-- definition link clicked
-    - path: The file path opened in the IDE
-- document reference clicked
-    - id: The #fragment part of the url, is interpreted as symbol
-- members link clicked
-    - id: The ID for which the members were retrieved
-- links link clicked
-    - id: The ID for which the links were retrieved
-- http link clicked
-    - url: the full http url clicked
-
-### Disabled events
-These events were once enabled but were disabled for volume reasons:
-
-- showed kite completion(s)
-    - size: Number of completions returned by Kite
-- used kite completion
-    - text: Inserted fragment
-
+# Counter Metrics
+Kite's counter metrics are used.
 
 # Used libraries and licenses
 This is an overview of the dependencies and their licenses.
@@ -260,9 +211,12 @@ This is an overview of the dependencies and their licenses.
 - [flying saucer](https://github.com/flyingsaucerproject/flyingsaucer/), XHTML/CSS 2.1 rendering library, [LGPL 2.1 or later](https://github.com/flyingsaucerproject/flyingsaucer/blob/master/LICENSE)
 - [JSoup](https://jsoup.org/), HTML parsing and cleaning, [MIT](https://jsoup.org/license)
 - [Pebble](https://github.com/PebbleTemplates/pebble), template rendering engine, [BSD-3-clause](https://github.com/PebbleTemplates/pebble/blob/master/LICENSE)
-- [Mixpanel Java](https://github.com/mixpanel/mixpanel-java), Mixpanel integration library, [Apache](https://github.com/mixpanel/mixpanel-java/blob/master/LICENSE)
 - [Rollbar](https://github.com/rollbar/rollbar-java), Rollbar integration library, [MIT](https://github.com/rollbar/rollbar-java/blob/master/LICENSE)
 - [coverity-escapers](https://github.com/coverity/coverity-security-library), text escaping library used by Pebble, [Custom coverity license](https://github.com/coverity/coverity-security-library#license)
-- [JSON](https://github.com/stleary/JSON-java), JSON parsing and writing (used by Mixpanel), [Custom license](https://github.com/stleary/JSON-java/blob/master/LICENSE)
 - [Jetty HTTP client](https://www.eclipse.org/jetty/), HTTP client, [Apache 2 and Eclipse dual license](https://github.com/eclipse/jetty.project/blob/jetty-9.4.x/LICENSE-eplv10-aslv20.html)
 - [NanoHttpd](https://github.com/NanoHttpd/nanohttpd), HTTP server for unit testing, [BSD-3-clause](https://github.com/NanoHttpd/nanohttpd/blob/master/LICENSE.md)
+- [backo-java](https://github.com/segmentio/backo-java), [MIT](https://github.com/segmentio/backo-java/blob/master/LICENSE.md)
+- [okhttp](https://github.com/square/okhttp), [Apache 2.0](https://github.com/square/okhttp/blob/master/LICENSE.txt)
+- [okio](https://github.com/square/okio), [Apache 2.0](https://github.com/square/okio/blob/master/LICENSE.txt)
+- [analytics](https://github.com/segmentio/analytics-java), [MIT](https://github.com/segmentio/analytics-java)
+- [retrofit](https://github.com/square/retrofit), [Apache 2.0](https://github.com/square/retrofit/blob/master/LICENSE.txt)
