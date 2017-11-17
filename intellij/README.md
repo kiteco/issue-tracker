@@ -1,222 +1,174 @@
-# IntelliJ plugin for Python support
+# Handbook
 
-## Summary
+## Supported platforms
+
+The Kite plugin supports the following environments:
+- PyCharm Community
+- PyCharm Professional
+- IntelliJ Community with the Python plugin
+- IntelliJ Ultimate with the Plugin plugin
+
+All versions of these IDEs which are equal to or later than 2016.1 are supported:
+- 2017.3 EAP
+- 2017.2
+- 2017.1
+- 2016.3
+- 2016.2
+- 2016.1
 
 
-## Build
-Gradle is used as build system. The gradle plugin https://github.com/JetBrains/gradle-intellij-plugin
-automatically downloads the IntelliJ files to build against.
+## Supported languages 
 
-- Run all tests: ```gradle clean test```
-- Build the obsfucated plugin zip file:
-    ```bash build-plugin.bash```
-or
-    ```gradle clean build && (cd proguard && bash run-proguard.bash)```
+The plugin's features are only available in file types supported by the Kite engine:
+- Python. Support is only available with PyCharm or if the official Python plugin is enabled.
 
-### Executing
-The plugin can be executed within IntelliJ:
-    ```gradle runIdea```
+## Startup
 
-### Building an unobsfucated plugin
- ```gradle clean build```
-The plugin zip file is saved in build/distribution/
+When you start your IDE for the first time after the Kite plugin was installed you will 
+see a notification message.
 
-### Building an obsfucated plugin
-Proguard is used to obsfucate the plugin. You can build the plugin zip file by running
- ```cd proguard; bash run-proguard.bash```
+![Notification at startup](docs/images/welcome-message.png)
 
-The setup is currently not yet setup to use the gradle build workflow.
+Click on `Don't show this at startup` to disable the message when your IDE starts. 
 
-## Implementation details
+## Statusbar 
+This is the Kite icon in the lower right corner which displays the current status of the Kite integration.
 
-### Activation / supported files
-The plugin's features are only enabled on supported platorms (i.e. Mac OS X at the moment).
-The default behaviour of the IDE will be used on unsupported platforms, i.e. PyCharm's code completion etc.
+States:
+  - Blue (or white in Darcula mode) -- The Kite Engine is available and functioning properly.
+  - Gray -- The Kite Engine is unavailable because there's either no file opened or the current file is unsupported.
+  - Red -- The Kite Engine is unavailable or there was an error during the last interaction with the engine.
 
-Events are only handled for Python files. Edits or cursor offset changes in unsupported file types will be ignored.
-Only files with a size below 2MB will be handled. There won't be event processing and code completion in files above that threshold.
+Click on the icon to see more details about the current status of the Kite Engine and details about your Kite account.
 
-### HTTP processing
-All http calls are executed in a background thread. There is only one
-connection to the kite backend to make sure that events and calls arrive in
-the desired order and to make sure that kite is not overloaded with too many requests.
+![Status panel showing "Kite is ready and working"](docs/images/status-panel.png)
+![Status panel showing that Kite is unavailable](docs/images/status-panel-notStarted.png)
 
-### Event processing
-Editor events are queued. Events of the same actionType for the same file are bundled,
-e.g. only one edit event is send if two consecutive edit events are placed into the queue.
-The special case of an edit event followed by a selection event is replaced with an edit event
-which has the state (buffer content + cursor position) of the last event, i.e. the selection event.
-
-The queued items are processed after a fixed delay (currently 250ms). The items are processed oldest to newest
-and send to the kite http backend.
+## Working with files
+The Kite plugin changes several features of your IDE.
+The changes are only applied in file types supported by Kite (currently Python only). If you're working in a Python file then you will see the modified user interface. If you're working in HTML files, for example, you will continue to see the traditional user interface of PyCharm/IntelliJ.
 
 ### Code completion
-Code completion is only available in supported file types, i.e. Python at this time.
+The plugin offers Kite's code completions in the editor. The completions are displayed in the usual list of completions.
+Kite's completions are inserted at the beginning of the list. Completions which were returned by PyCharm/IntelliJ will be listed after Kite's suggestions. Duplicate items are removed.
+Kite's code completion items have a little Kite in front of it to indicate the source.
 
-A code completion call is executed as soon as the event queue is empty to make
-sure that all events have been processed. If there are code completions then any following code completion suggestions by PyCharm or other plugins are supressed.
+![Code completion of json.dumps()](docs/images/code-completion-json.png)
 
-If kite returned no completions or if a timeout (currently 350ms) occured while waiting for an empty event queue then
-Kite's completions are skipped. The default code completion contributors are called in every case, i.e. a fallback to other code completion suggestions is always done.
+If code completion is requsted while Kite is not running then PyCharm's/IntelliJ's items will be displayed together with a little note below that Kite's are currently not available.
 
-### Whitelisting
-If a user works in a file which is not yet in a whitelisted directory then IntelliJ will display a notification to ask whether the user would like to
-add it to the list of whitelisted resources.
-The exact workflow is defined in Kite's developer configuration.
-The notifications displayed are non-model balloon popups. This kind of background notification is used to be as unobtrusive as possible.
-A modal dialog would steal the focus and would possibly annoy users which are interruped in their work.
-The notification offers these options:
- - Whitelist /dir/send/by/kite
- - Browse ...
- - Settings ...
- - Ignore this file
+#### Documentation for autocompletion items
+The quick documentation feature is available for Kite's code completions. To show it select an item in the code completion menu and then invoke `View -> Quick Documentation`. Alternatively you can use the keyboard shortcut which is shown next to the `Quick Documentation` menu item.
 
-## Development
-### Logging
-If you would like to see detailed log message you have to enable them in PyCharm. Do this to enable debug messages:
+![Code completion of json.dumps() with documentation](docs/images/code-completion-json-quickdoc.png)
 
-    - Open `Help -> Debug Log Settings` PyCharm
-    - Enter `kite` in a new line in the text editor
-    - Restart PyCharm
+#### Limitations
+The Kite plugin returns the same completions for basic and smart-type completions.
+    
+At this time the autocompletion is available only while you're editing a file, i.e. at the place you're typing. If you call the code completion later on at another location without editing the file then Kite does not return the expected completions at all times. We're working on full support of this feature.  
 
-The log data is available in the file opened by `Help -> Show Log in Finder`
+### Quick documentation
+The quick documentation is enhanced by the plugin in files supported by Kite.
+Choose `View -> Quick Documentation` to open the documentation popup. This feature uses the standard key binding of your IDE, in most cases this is <kbd>Ctrl + Q</kbd> (or <kbd>Cmd + J</kbd> on Mac OS X).
+ 
+Use the arrow keys or your mouse to scroll in the content. You can close the popup by pressing <kbd>Escape</kbd>.  
 
-If the trace level of the logger-category kite.http is enabled then the log will contain the curl command lines to re-execute a kite request to simplify debugging.
-The trace level can be activated by entering `kite.http` as a new line in `Help -> Debug Log Settings`.
+![Quick documentation popup](docs/images/quick-doc.png)
 
-#### Available channels
-These channels can be used in the `Debug Log Settings` dialog to get more verbose plugin log output:
-- #kite.action
-- #kite.action.delegate
-- #kite.action.delegateHandler
-- #kite.action.override
-- #kite.api
-- #kite.completions
-- #kite.eventQueue
-- #kite.http
-- #kite.http.script (trace only)
-- #kite.link.externalExample
-- #kite.link.linkListener
-- #kite.link.member
-- #kite.mockHttp
-- #kite.monitoring
-- #kite.monitoring.preload
-- #kite.pebble
-- #kite.pebble.extension
-- #kite.platform
-- #kite.platform.exeDetector
-- #kite.platform.macExeDetector
-- #kite.platform.pathLauncher
-- #kite.renderUtil
-- #kite.rollbar
-- #kite.status.model
-- #kite.status.statusBarWidget
-- #kite.timing
-- #kite.ui
-- #kite.ui.SwingWorker
-- #kite.ui.autoPopup
-- #kite.ui.docPopupManager
-- #kite.ui.mouseOverManager
-- #kite.ui.quickDocProxy
-- #kite.ui.quickDocSupression
-- #kite.ui.signaturePopup
-- #kite.uil.htmlPopup
-- #kite.whitelisting
-- #kite.whitelisting.link
+If the quick documentation is requested while Kite is not running then PyCharm's/IntelliJ's original documentation popup will be displayed.
 
-### Templates
-Kite responses are rendered using the Pebble template engine (http://www.mitchellbosecke.com/pebble/home).
+### Documentation on mouse move
+If you enabled the setting  `Settings -> Editor -> General -> Show quick documentation on mouse move` then the popup will show Kite's information. The Kite plugin uses the configured delay of this setting to show the popup after the mouse was moved. IntelliJ's original popup will not be shown in supported files. 
 
-#### Template development
-It's possible to let the plugin use template files available on disk instead of the built-in data.
-If $HOME/intellij-templates/ is available, then this directory will be used as base path to load the templates. The directory should contain the data of https://github.com/kiteco/intellij-plugin-private/tree/feature/documentationLookup/src/main/resources/templates/ .
+![Popup after mouse move](docs/images/mouse-over-popup.png)
 
-It's also possible to define the Java property *kite.templatePath* to define where the template directory is available on disk.
-To define it the custom VM options of PyCharm must be edited:
+#### Limitations
+If the mouse over popup is requested while Kite is not running then a balloon notification will be displayed instead. The original quick doc isn't shown.
 
-- Open PyCharm
-- Choose `Help > Edit Custom VM Options ...`
-- Agree to create the file, if it does not exist yet
-- Add a new line at the end of the file (adjusted to your configuration):
+### Parameter info
+The Kite plugin enhances the parameter information of your IDE. 
 
-        -Dkite.templatePath=/Users/username/git/intellij-plugin-private/src/main/resources/templates
+If you place the text cursor into a method call and call `View -> Parameter Info` in a file supported by Kite then an
+extended popup will be shown. It uses the standard key binding of your IDE, in most cases this is <kbd>Ctrl + P</kbd> (or <kbd>Cmd + P</kbd> on Mac OS X).
 
-- Restart PyCharm
+![Param info of json.dumps()](docs/images/param-info-kwargs.png)
 
-Changes to the template files will be loaded as soon as a new lookup is requested.
+The currently active parameter is highlighted as **bold**.
 
-If the property *kite.templateOutputPath.hover* is defined, then the last rendering of the hover report will be written into a file at the given location.
-For example, if the line
+Press <kbd>Tab</kbd> to highlight the next parameter in the panel. Use <kbd>Shift + Tab</kbd> to highlight the previous parameter. If you edit the file or move the text cursor then the
+currently highlighted parameter will be updated.
 
-    -Dkite.templateOutputPath.hover=/Users/username/intellij-html-output.html
+The links in the panel are clickable. Click on the links to see the details of the linked element.
 
-is given in the configuration file above, then each invocation of the hover report will update the content of the file */Users/username/intellij-html-output.html* with the html data displayed in the popup window shown in IntelliJ.
+If parameter information is requested while Kite is not running then the original parameter information popup will be displayed instead.
 
-#### Template directory structure
-The templates are for Python only, at the moment. Each supported language will habe its own set of rendering templates.
+### Whitelisting 
+The Kite engine's features are only available in whitelisted directories. If you edit a file which is not whitelisted then a notification 
+will appear offering to whitelist a directory that contains the file.
 
-- The shared template pieces are in `templates/python/common/`
-- Shared macros are defined in `templates/python/common/macros.peb`
-- The hover report is rendered by `templates/hover/long/hover.peb`.
-- A list of members, i.e. a response of `/api/editor/value/ID/members`, is rendered by `templates/members/members.peb`.
-- A symbol report, i.e. a reponse of `/api/editor/symbol/ID`, is rendered by `templates/symbolReport/symbolReport.peb`.
-- A value report, i.e. a reponse of `/api/editor/value/ID`, is rendered by templates/valueReport/valueReport.peb.
-- Signature information is rendered by `templates/python/signature/calls.peb` and `templates/python/signature/call.peb`
+To learn more about Whitelisting and privacy check out: http://help.kite.com/article/7-what-files-does-kite-upload-to-their-servers.
 
-Each template file has a header which lists the context variabels which are available. The given types refer to Java classes available in `src/main/java/com/kite/intellij/backend`.
+![Whitelisting message for a file not yet whitelisted](docs/images/file-not-whitelisted.png)  
 
-Include directives in the template refer to the path starting at `src/main/resources/templates`, i.e. base.peb is references as `common/base.peb`.
+- *Whitelist `/`*: Click this to whitelist the suggested path on your machine. After a short while code completion and the the other Kite features are going to be available.
+- *Browse*: Use this to specify a custom directory which should be whitelisted instead of the suggested path.
+- *Settings*: Opens Kite's [permission settings](http://localhost:46624/settings/permissions) in your browser. 
+- *Ignore*: Kite will no longer prompt you to whitelist this file in your current working session.
 
-### Properties defined for all templates
-The following properties are always available in a template:
-- `dark`: actionType `boolean`, is true if the current theme is Darcula, i.e. dark colors
-- `light`: actionType `boolean`, is true if the current theme is the default theme, i.e. lighter colors. `light` is always the inverted value of `dark`
-- `windows`: actionType `boolean`, is true if the current OS is any version of Windows
-- `mac`: actionType `boolean`, is true if the current OS is any version of Mac OS X
-- `linux`: actionType `boolean`, is true if the current OS is any version of Linux
-- `bgColor`: actionType `String`, is the hex-encoded value (including the prefix `#`) of the currently configured background color for IntelliJ's documentation panel
-- `textColor`: actionType `String`, is the hex-encoded value (including the prefix `#`) of the currently configured text color
+To view and edit your whitelisting settings:
+- Click on the Kite icon in the statusbar and then on `Settings` to open Kite's settings in your browser. Open the tab `Permissions...` to edit your whitelisting settings.  
+- Visit http://localhost:46624/settings/permissions
+
+## Settings
+The Kite plugin offers several settings to customize it. The settings are configured for the application, they apply in all your projects.
+
+Open `File -> Settings... -> Languages & Frameworks -> Kite` to see the configuration options.
+
+![Kite plugin settings dialog](docs/images/settings-dialog.png)
+
+Kite allows to set your preferred font sizes for displayed text in the quick documentation panel and the parameter information panel. Because the plugin uses a different rendering engine than the other parts of IntelliJ there might be differences in the size of the rendered text. If no custom font size is configured then Kite applies the font sizes which are used by IntelliJ.
+
+The font settings only apply in file types which are supported by Kite, other file types are not modified in any way.
+
+The font family is not yet configurable. We use suitable values for the different operating systems we support.
+
+- **Quick documentation**
+    - **Custom font size**: Set this value to set the font-size of the quick documentation display used by Kite.
+- **Parameter Info**
+    - **Custom delay for automatic popup**: IntelliJ/PyCharm has a setting to automatically popup the parameter information after a user typed `(` or `,` in a method invocation. The Kite plugin allows you to override the delay of this popup. If the delay is not specified then the value configured in your IDE's settings will be used instead.
+    - **Custom font size**: This settings allows you to override the font-size of the text displayed in the parameter information panel.
+- **Mouse over popup**
+    - **Custom popup delay on mouse move**: IntelliJ/PyCharm has a setting to automatically show brief information about an element in your editor if you hover your mouse pointer over it. The setting is not enabled in the default configuration. If you enable it then you're able to override the delay after which the popup will be displayed. You can click on `Configure 'Show quick documentation on mouse move' here` to switch to the settings where this configuration option is shown.
+    - **Custom font size**: This font size will be used to render the mouse-over popup which is displayed in file types supported by Kite.
+
+### Configuring Keyboard Shortcuts
+
+The Kite plugin enhances PyCharm's / IntelliJ's existing features. It inherits the already configured keyboard shortcuts.
+
+The following actions also apply to Kite's features, which are available in supoprted files:
+- `View -> Quick Documentation`
+- `View -> Parameter Info`
 
 
-#### Pebble extensions
-The kite plugin adds several extensions to the Pebble rendering.
+![Updating a shortcut used by the Kite plugin](docs/images/settings-keyboard.png)
 
-##### Functions
-The following custom pebble functions are available in addition to the built-in functions:
+## FAQ
 
-- `kiteUpgradeLink`: This function returns a link which redirects to the "Upgrade to pro" page on kite.com. The link needs to opened in the browser because it redirects. 
-- `kiteInviteLink`: This function returns a link which redirects to the "Invite" page on kite.com. The link needs to opened in the browser because it redirects.
+### Is the plugin installed in my IDE?
+Please open the settings dialog (`File -> Settings...`), choose `Plugins` and check whether there is an item called `Kite` in the list of installed plugins.
+![Kite in the list of installed plugins](docs/images/plugin-installation-check.png) 
 
-##### Filters
-The following filters are made available in addition to the built-in filters:
+### How can I find out whether the Kite plugin is working properly or not?
+Please make sure that the plugin is installed (see above).
+If the plugin is installed please make sure that the Kite engine is running. If the connection between the plugin and the kite engine is working properly then you will see a little blue Kite icon in the status bar.
 
-- `kiteExternalLink`: This filter takes a value of tyep `string`, `Id`, `Value`, `ValueExt`, `Symbol` or `SymbolExt` and returns an URL which references the external documentation rendering as provided by kite.
-- `kiteInternalLink`: This filter takes a value of actionType `string`, `Id`, `Value`, `ValueExt`, `Symbol` or `SymbolExt` and returns an URL which linkes to the built-in view to show the details.
-- `kiteMembersLink`: This filter takes a value of actionType `string`, `Id`, `Value`, `ValueExt` and returns an URL which will open the list of members in the built-in view.
-- `kiteLinksLink`: This filter takes a value of actionType `string`, `Id`, `Value`, `ValueExt` and returns an URL which will open the list of links in the built-in view.
-- `kiteExample`: returns an url which will open the example in the web, e.g. `{{ example.id | kiteExample }}`
-- `kiteFilename`: returns just the filename of an input path, e.g. `{{ fullPath | kiteFilename }}`
-- `kiteSignatureInfoLink`: named parameters `expandCommonInvocations` and `argIndex`. Returns an URL which links to a signature information for the element at the current editor's cursor position.
-- `kiteHoverLink`: named parameters `shortRendering`, `offset`, `length`. Generates an URL which can be used to show hover report information for either the token given by `offset` and `length` or (if undefined) for the element at the current editor's cursor position.
-- `kiteClasspathUrl`: generates an URL which points to a resource in the classpath. This can be used to reference images bundled with the plugin, e.g. `{{ "/icons/logo.png" | kiteClasspathUrl }}` can be used as a value for an image src attribute.
-- `kiteColor`: named parameters `brighter` and `darker` which take tone levels, e.g. `{{ "#ffffff" | kiteColor("darker"=3) }}` will reduce the brightness of white by 3 tones
-- `kiteFileUrl`: named parameters `line`. Takes a string as input and returns an URL referencing it if it exists on the local file system. If it doesn't exist then null is returned. The parameter `line` is added query parameter, if defined.
+![Kite status bar icon](docs/images/status-panel.png) 
 
-# Counter Metrics
-Kite's counter metrics are used.
+If the connection is working properly and if no error or warning is shown in the status panel, then please make sure that the file you're editing is supported by the Kite engine. Only Python files are supported at the moment.
 
-# Used libraries and licenses
-This is an overview of the dependencies and their licenses.
+If you use IntelliJ and not PyCharm then Kite can only offer its extended suport for Python if JetBrains' Python plugin is installed and activated. Please open `File -> Settings...`, click on `Plugin` in the list on the left and then search for `Python` in the list of installed plugins and make sure that it is enabled. If there is no Python plugin in the list then you can install it by clicking on `Install JetBrains plugin...`.
 
-- [flying saucer](https://github.com/flyingsaucerproject/flyingsaucer/), XHTML/CSS 2.1 rendering library, [LGPL 2.1 or later](https://github.com/flyingsaucerproject/flyingsaucer/blob/master/LICENSE)
-- [JSoup](https://jsoup.org/), HTML parsing and cleaning, [MIT](https://jsoup.org/license)
-- [Pebble](https://github.com/PebbleTemplates/pebble), template rendering engine, [BSD-3-clause](https://github.com/PebbleTemplates/pebble/blob/master/LICENSE)
-- [Rollbar](https://github.com/rollbar/rollbar-java), Rollbar integration library, [MIT](https://github.com/rollbar/rollbar-java/blob/master/LICENSE)
-- [coverity-escapers](https://github.com/coverity/coverity-security-library), text escaping library used by Pebble, [Custom coverity license](https://github.com/coverity/coverity-security-library#license)
-- [Jetty HTTP client](https://www.eclipse.org/jetty/), HTTP client, [Apache 2 and Eclipse dual license](https://github.com/eclipse/jetty.project/blob/jetty-9.4.x/LICENSE-eplv10-aslv20.html)
-- [NanoHttpd](https://github.com/NanoHttpd/nanohttpd), HTTP server for unit testing, [BSD-3-clause](https://github.com/NanoHttpd/nanohttpd/blob/master/LICENSE.md)
-- [backo-java](https://github.com/segmentio/backo-java), [MIT](https://github.com/segmentio/backo-java/blob/master/LICENSE.md)
-- [okhttp](https://github.com/square/okhttp), [Apache 2.0](https://github.com/square/okhttp/blob/master/LICENSE.txt)
-- [okio](https://github.com/square/okio), [Apache 2.0](https://github.com/square/okio/blob/master/LICENSE.txt)
-- [analytics](https://github.com/segmentio/analytics-java), [MIT](https://github.com/segmentio/analytics-java)
-- [retrofit](https://github.com/square/retrofit), [Apache 2.0](https://github.com/square/retrofit/blob/master/LICENSE.txt)
+### Why does nothing happen when I edit a Python file?
+First, make sure that the  plugin is working properly (see above).
+If the plugin is correctly installed then it is possible that the Kite engine is not returning the data you expected for the current file. You can test to make sure that the Kite engine is working by typing `import json`, you should see Kite completions as you type (they have a little kite icon next to them) and documentation when you select `json` and click `View -> Quick Documentation`. 
+If the plugin is not working as you expected then please submit an error report to feedback@kite.com.
