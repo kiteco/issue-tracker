@@ -78,6 +78,10 @@ set completeopt+=noinsert  " don't insert any text until user chooses a match
 set completeopt-=noselect  " select first match
 ```
 
+Make sure you have either `menu` or `menuone` otherwise you won't see any completions.
+
+If you set `longest` together with `menu` or `menuone`, you will need to type `CTRL-L` when the pop-up menu is showing to insert the longest common text.  See `:help completeopt` for details.
+
 To see documentation in the preview window for each completion option, copy all the lines above into your vimrc and change the preview line to:
 
 ```viml
