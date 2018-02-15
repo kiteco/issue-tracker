@@ -1,6 +1,8 @@
 # Sublime Text 3 Kite Plugin Documentation
 
-This is a brief documentation about Sublime Text 3 Kite Plugin
+This is a brief description of Kite's Sublime Text 3 plugin.
+
+NOTE: To get up and running with Kite, on Sublime or any other editor, download Kite at https://kite.com/download.
 
 ## Supported Sublime Text Versions
 
