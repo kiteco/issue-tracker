@@ -1,5 +1,7 @@
 ## Atom Kite Plugin Documentation
 
+*NOTE*: To get up and running with Kite, download Kite at https://kite.com/download.
+
 ### Supported Atom Versions
 
 All Atom versions greater than or equal to `v1.13.0` are supported.
