@@ -18,32 +18,6 @@ Download Kite from https://kite.com.  During Kite's installation process, select
 Kite will also keep the plugin up to date automatically.
 
 
-### Manual installation
-
-#### Vim
-
-Assuming your Vim configuration is in `~/.vim/`:
-
-```sh
-$ mkdir -p ~/.vim/pack/kite/start/kite
-$ git clone https://github.com/kiteco/vim-plugin.git ~/.vim/pack/kite/start/kite/
-```
-
-Restart Vim.
-
-
-#### Neovim
-
-Assuming your Neovim configuration is in `~/.config/nvim`:
-
-```sh
-$ mkdir -p ~/.config/nvim/pack/kite/start/kite
-$ git clone https://github.com/kiteco/vim-plugin.git ~/.config/nvim/pack/kite/start/kite/
-```
-
-Restart Neovim.
-
-
 ### Kite Sidebar
 
 As you edit your code in Vim/Neovim, the Kite Sidebar will show completions, popular patterns, code examples, and documentation for the code under the cursor.
