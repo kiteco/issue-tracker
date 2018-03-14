@@ -84,7 +84,7 @@ If you have mapped `K` already, the plugin won't overwrite your mapping.
 You can set an alternative mapping, e.g. to `gK`, like this:
 
 ```viml
-nmap <silent> gK <Plug>(kite-hover)
+nmap <silent> <buffer> gK <Plug>(kite-hover)
 ```
 
 By default you need to type `K` (or whatever you have mapped to `<Plug>(kite-hover)`) each time you want to see documentation for the keyword under the cursor.  To have the documentation continually update itself as you move from keyword to keyword:
