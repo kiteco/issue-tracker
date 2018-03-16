@@ -1,7 +1,5 @@
 # Kite for Visual Studio Code
 
-*NOTE*: To get up and running with Kite, download Kite at https://kite.com/download.
-
 This extension adds support for Kite in Visual Studio Code and adds the features:
 
 - Completions

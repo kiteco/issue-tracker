@@ -1,7 +1,5 @@
 # Handbook
 
-*NOTE*: To get up and running with Kite, download Kite at https://kite.com/download.
-
 ## Supported platforms
 
 The Kite plugin supports the following environments:
