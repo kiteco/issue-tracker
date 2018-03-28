@@ -142,6 +142,26 @@ set laststatus=2  " always display the status line
 ```
 
 
+### Editor metrics
+
+When you start Vim after installing Kite, it will ask whether you wish to opt in to sending metrics about the status of the Kite application to Kite's servers.
+
+You can also opt in or out at any time with the following commands:
+
+```viml
+" Opt in
+:KiteEnableEditorMetrics
+
+" Opt out
+:KiteDisableEditorMetrics
+```
+
+
+### Development
+
+When working on the plugin, ensure the file `~/.kite/vim-development` (or `$LOCALAPPDATA$\Kite\vim-development` on Windows) is present.  This tells the plugin to use development mode, i.e. to use the non-production key when POSTing metrics to Segment.
+
+
 ### Debugging
 
 Use `let g:kite_log=1` to switch on logging.  Logs are written to `kite-vim.log` in Vim's current working directory.
