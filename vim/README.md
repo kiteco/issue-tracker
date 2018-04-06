@@ -3,7 +3,7 @@
 
 ### Features
 
-- [Integrates with Kite Sidebar (macOS)](#kite-sidebar)
+- [Integrates with Kite Copilot (macOS)](#kite-copilot)
 - [Completions](#completions)
 - [Documentation](#documentation)
 - [Statusline](#statusline)
@@ -44,9 +44,9 @@ $ git clone https://github.com/kiteco/vim-plugin.git ~/.config/nvim/pack/kite/st
 Restart Neovim.
 
 
-### Kite Sidebar
+### Kite Copilot
 
-As you edit your code in Vim/Neovim, the Kite Sidebar will show completions, popular patterns, code examples, and documentation for the code under the cursor.
+As you edit your code in Vim/Neovim, the Kite Copilot will show completions, examples, and docs for the code under the cursor.
 
 
 ### Completions
