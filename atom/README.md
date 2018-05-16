@@ -92,8 +92,8 @@ Kite exposes many commands so that you can setup your own keybindings for them.
 |---|---|
 |`kite:search`|Expand the search panel.|
 |`kite:docs-at-cursor`|When the cursor is inside an expression, this command will open the sidebar with relevant docs.|
-|`kite:open-permissions`|Opens Kite permissions into your browser.|
-|`kite:open-settings`|Opens Kite settings into your browser.|
+|`kite:permissions`|Opens Kite permissions into your browser.|
+|`kite:general-settings`|Opens Kite settings into your browser.|
 |`kite:open-sidebar`|Opens Kite sidebar.|
 |`kite:close-sidebar`|Closes Kite sidebar.|
 |`kite:toggle-sidebar`|Toggle Kite sidebar panel (this will close the panel if it was open, or vice versa).|
