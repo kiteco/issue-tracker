@@ -64,13 +64,13 @@ The quick documentation feature is available for Kite’s code completions. To s
 #### Limitations
 The Kite plugin returns the same completions for basic and smart-type completions.
 
-At this time the autocompletion is available only while you’re editing a file, i.e. at the place you’re typing. If you call the code completion later on at another location without editing the file then Kite does not return the expected completions at all times. We’re working on full support of this feature.  
+At this time the autocompletion is available only while you’re editing a file, i.e. at the place you’re typing. If you call the code completion later on at another location without editing the file then Kite does not return the expected completions at all times. We’re working on full support of this feature.
 
 ### Quick documentation
 The quick documentation is enhanced by the plugin in files supported by Kite.
 Choose `View -> Quick Documentation` to open the documentation popup. This feature uses the standard key binding of your IDE, in most cases this is <kbd>Ctrl + Q</kbd> (or <kbd>Cmd + J</kbd> on Mac OS X).
 
-Use the arrow keys or your mouse to scroll in the content. You can close the popup by pressing <kbd>Esc</kbd>.  
+Use the arrow keys or your mouse to scroll in the content. You can close the popup by pressing <kbd>Esc</kbd>.
 
 ![Quick documentation popup](docs/images/quick-doc.png)
 
@@ -111,12 +111,12 @@ To learn more about Whitelisting and privacy check out: http://help.kite.com/art
 
 - *Whitelist `/`*: Click this to whitelist the suggested path on your machine. After a short while code completion and the the other Kite features are going to be available.
 - *Browse*: Use this to specify a custom directory which should be whitelisted instead of the suggested path.
-- *Settings*: Opens Kite’s [permission settings](http://localhost:46624/settings/permissions) in your browser.
+- *Settings*: Opens Kite’s [permission settings](kite://settings/permissions) in your browser.
 - *Ignore*: Kite will no longer prompt you to whitelist this file in your current working session.
 
 To view and edit your whitelisting settings:
-- Click on the Kite icon in the statusbar and then on `Settings` to open Kite’s settings in your browser. Open the tab `Permissions...` to edit your whitelisting settings.  
-- Visit http://localhost:46624/settings/permissions
+- Click on the Kite icon in the statusbar and then on `Settings` to open Kite’s settings in your browser. Open the tab `Permissions...` to edit your whitelisting settings.
+- Visit kite://settings/permissions
 
 ## Settings
 The Kite plugin offers several settings to customize it. The settings are configured for the application, they apply in all your projects.
