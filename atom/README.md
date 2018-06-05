@@ -24,7 +24,7 @@ You can install the Atom plugin from Kite directly. You can also install the plu
 
 When starting Atom with Kite plugin for the first time, a brief tour about Kite will be displayed in the active pane.
 
-![kite tour](./docs/images/kite-tour.png)
+![kite tour](https://github.com/kiteco/atom-plugin/blob/master/docs/images/kite-tour.png?raw=true)
 
 This tour will only be displayed once. If you want to see it again on next startup you can activate the `Show Kite Tour On Startup` setting.
 
@@ -34,9 +34,9 @@ The Kite icon in the status bar displays the state of Kite for the current file.
 
 The icon in the status bar can take three different colors:
 
-- blue: The Kite Engine is available and functioning properly.<br/>![kite tour](./docs/images/kite-status-ready.png)
-- gray: There's either no open file or, if there's an active file, the file is either not supported or not whitelisted.<br/>![kite tour](./docs/images/kite-status-not-whitelisted.png)
-- red: Something went wrong when the plugin tried to contact the Kite service on your computer. Depending on the issue, the status panel can offer actions to solve the problem.<br/>![kite tour](./docs/images/kite-status-not-running.png)
+- blue: The Kite Engine is available and functioning properly.<br/>![kite tour](https://github.com/kiteco/atom-plugin/blob/master/docs/images/kite-status-ready.png?raw=true)
+- gray: There's either no open file or, if there's an active file, the file is either not supported or not whitelisted.<br/>![kite tour](https://github.com/kiteco/atom-plugin/blob/master/docs/images/kite-status-not-whitelisted.png?raw=true)
+- red: Something went wrong when the plugin tried to contact the Kite service on your computer. Depending on the issue, the status panel can offer actions to solve the problem.<br/>![kite tour](https://github.com/kiteco/atom-plugin/blob/master/docs/images/kite-status-not-running.png?raw=true)
 
 ### Editor features
 
@@ -44,7 +44,7 @@ The icon in the status bar can take three different colors:
 
 When you move the mouse over an expression, Kite can display a popup with a quick summary of what this expression represents, and links to additional documentation.
 
-![kite hover](./docs/images/kite-hover.png)
+![kite hover](https://github.com/kiteco/atom-plugin/blob/master/docs/images/kite-hover.png?raw=true)
 
 You can see up to three links in the popup:
 
@@ -56,7 +56,7 @@ You can see up to three links in the popup:
 
 Kite exposes an `autocomplete-plus` provider. When in a supported file, you'll be able to see Kite's suggestions as well as some additional documentation and links in the `autocomplete-plus` panel.
 
-![kite completions](./docs/images/kite-completions.png)
+![kite completions](https://github.com/kiteco/atom-plugin/blob/master/docs/images/kite-completions.png?raw=true)
 
 The links at the bottom have the same behaviour of those in the [hover UI](#hover-documentation).
 
@@ -64,7 +64,7 @@ The links at the bottom have the same behaviour of those in the [hover UI](#hove
 
 When typing inside a function's parentheses, Kite will display the function signature with info about the current argument and links to additional documentation.
 
-![kite signatures](./docs/images/kite-signature.png)
+![kite signatures](https://github.com/kiteco/atom-plugin/blob/master/docs/images/kite-signature.png?raw=true)
 
 The links at the bottom have the same behavior of those in the [hover popup](#hover-info).
 
@@ -72,17 +72,17 @@ The links at the bottom have the same behavior of those in the [hover popup](#ho
 
 Kite sidebar offers more detailed docs. You can use the sidebar to browse the members of a module or a type, to access curated examples, and more.
 
-![kite sidebar](./docs/images/kite-sidebar.png)
+![kite sidebar](https://github.com/kiteco/atom-plugin/blob/master/docs/images/kite-sidebar.png?raw=true)
 
 #### Search
 
 When working in a supported file, this small overlay will be displayed at the bottom right of the workspace.
 
-![kite sidebar](./docs/images/kite-active-search-collapsed.png)
+![kite sidebar](https://github.com/kiteco/atom-plugin/blob/master/docs/images/kite-active-search-collapsed.png?raw=true)
 
 Clicking on it will expand Kite search panel. It allows you to search for identifiers from 3rd party packages or your local codebase.
 
-![kite sidebar](./docs/images/kite-active-search.png)
+![kite sidebar](https://github.com/kiteco/atom-plugin/blob/master/docs/images/kite-active-search.png?raw=true)
 
 ### Commands
 

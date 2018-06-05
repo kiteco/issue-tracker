@@ -132,6 +132,18 @@ let g:kite_override_sign_column_highlight=0
 ```
 
 
+### Commands
+
+- `KiteDocsAtCursor` - show documentation for the keyword under the cursor.
+- `KiteOpenSidebar` - open the Kite sidebar within Vim.
+- `KiteCloseSidebar` - close the Kite sidebar within Vim.
+- `KiteOpenCopilot` - open the Kite Copilot and focus on it.
+- `KiteGeneralSettings` - open Kite's settings in the Copilot.
+- `KitePermissions` - open Kite's permission settings in the Copilot.
+- `KiteHelp` - show overview documentation.
+
+
+
 ### Statusline
 
 Add `%{kite#statusline()}` to your statusline to get an indicator of what Kite is doing.  If you don't have a status line, this one matches the default when `&ruler` is set:
