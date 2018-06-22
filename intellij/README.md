@@ -9,13 +9,14 @@ The Kite plugin supports the following environments:
 - IntelliJ Ultimate with the Plugin plugin
 
 All versions of these IDEs which are equal to or later than 2016.1 are supported:
-- 2017.3 EAP
+- 2018.2 EAP
+- 2018.1
+- 2017.3
 - 2017.2
 - 2017.1
 - 2016.3
 - 2016.2
 - 2016.1
-
 
 ## Supported languages
 
