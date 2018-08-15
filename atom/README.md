@@ -50,7 +50,7 @@ You can see up to three links in the popup:
 
 - `def` will open the file where this symbol is defined (this may not be available if Kite cannot find the definition)
 - `web` will open the symbol documentation page in your browser
-- `more` will open the [Kite sidebar panel](#sidebar-panel) with additional documentation for this symbol
+- `more` will open the Kite copilot with additional documentation for this symbol
 
 #### Completions
 
@@ -68,32 +68,14 @@ When typing inside a function's parentheses, Kite will display the function sign
 
 The links at the bottom have the same behavior of those in the [hover popup](#hover-info).
 
-#### Sidebar
-
-Kite sidebar offers more detailed docs. You can use the sidebar to browse the members of a module or a type, to access curated examples, and more.
-
-![kite sidebar](https://github.com/kiteco/atom-plugin/blob/master/docs/images/kite-sidebar.png?raw=true)
-
-#### Search
-
-When working in a supported file, this small overlay will be displayed at the bottom right of the workspace.
-
-![kite sidebar](https://github.com/kiteco/atom-plugin/blob/master/docs/images/kite-active-search-collapsed.png?raw=true)
-
-Clicking on it will expand Kite search panel. It allows you to search for identifiers from 3rd party packages or your local codebase.
-
-![kite sidebar](https://github.com/kiteco/atom-plugin/blob/master/docs/images/kite-active-search.png?raw=true)
-
-### Commands
-
 Kite exposes many commands so that you can setup your own keybindings for them.
 
 |Command|Description|
 |---|---|
-|`kite:search`|Expand the search panel.|
-|`kite:docs-at-cursor`|When the cursor is inside an expression, this command will open the sidebar with relevant docs.|
-|`kite:permissions`|Opens Kite permissions into your browser.|
-|`kite:general-settings`|Opens Kite settings into your browser.|
-|`kite:open-sidebar`|Opens Kite sidebar.|
-|`kite:close-sidebar`|Closes Kite sidebar.|
-|`kite:toggle-sidebar`|Toggle Kite sidebar panel (this will close the panel if it was open, or vice versa).|
+|`kite:docs-at-cursor`|When the cursor is inside an expression, this command will open the copilot with relevant docs.|
+|`kite:open-copilot`|Open the Kite copilot.|
+|`kite:permissions`|Opens Kite permissions into the copilot.|
+|`kite:general-settings`|Opens Kite settings into the copilot.|
+|`kite:editor-plugin-settings`|Opens the Kite plugin settings in Atom.|
+|`kite:help`|Open Kite help into your browser.|
+|`kite:status`|Open the Kite status panel.|
