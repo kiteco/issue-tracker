@@ -103,40 +103,26 @@ set belloff+=ctrlg  " if vim beeps during completion
 
 ### Documentation
 
-Press `K` when the cursor is on a keyword to open a split window with code snippets, links to relevant StackOverflow answers, all the places you've use the keyword in your code, and links to fuller online documentation.  Press `<CR>` on any item to see more information.
+Press `K` when the cursor is on a keyword to view its documentation in Kite Copilot.
 
 If you have mapped `K` already, the plugin won't overwrite your mapping.
 
 You can set an alternative mapping, e.g. to `gK`, like this:
 
 ```viml
-nmap <silent> <buffer> gK <Plug>(kite-hover)
+nmap <silent> <buffer> gK <Plug>(kite-docs)
 ```
 
-By default you need to type `K` (or whatever you have mapped to `<Plug>(kite-hover)`) each time you want to see documentation for the keyword under the cursor.  To have the documentation continually update itself as you move from keyword to keyword:
+By default you need to type `K` (or whatever you have mapped to `<Plug>(kite-docs)`) each time you want to see documentation for the keyword under the cursor.  To have the documentation continually update itself as you move from keyword to keyword:
 
 ```viml
 let g:kite_documentation_continual=1
-```
-
-When you press `<CR>` on a usage or definition, it will be shown in the code window you came from.  To see it in the preview window instead:
-
-```viml
-let g:kite_preview_code=1
-```
-
-The plugin displays the sign column in the documentation window and, by default, sets it to use the same highlight as the line number column.  If you would prefer the plugin not to alter the `SignColumn` highlight:
-
-```viml
-let g:kite_override_sign_column_highlight=0
 ```
 
 
 ### Commands
 
 - `KiteDocsAtCursor` - show documentation for the keyword under the cursor.
-- `KiteOpenSidebar` - open the Kite sidebar within Vim.
-- `KiteCloseSidebar` - close the Kite sidebar within Vim.
 - `KiteOpenCopilot` - open the Kite Copilot and focus on it.
 - `KiteGeneralSettings` - open Kite's settings in the Copilot.
 - `KitePermissions` - open Kite's permission settings in the Copilot.
