@@ -49,8 +49,7 @@ When you move the mouse over an expression, Kite can display a popup with a quic
 You can see up to three links in the popup:
 
 - `def` will open the file where this symbol is defined (this may not be available if Kite cannot find the definition)
-- `web` will open the symbol documentation page in your browser
-- `more` will open the Kite copilot with additional documentation for this symbol
+- `docs` will open the Kite copilot with additional documentation for this symbol
 
 #### Completions
 
