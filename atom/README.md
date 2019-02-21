@@ -1,80 +1,125 @@
-## Atom Kite Plugin Documentation
+# Kite Python Assistant
 
-### Supported Atom versions
+Kite is an AI-powered programming assistant that helps you write Python code inside Atom. The
+[Kite Engine](https://kite.com/) needs to be installed in order for the package to work properly. The package itself
+provides the frontend that interfaces with the Kite Engine, which performs all the code analysis and machine learning.
 
-All Atom versions greater than or equal to `v1.13.0` are supported.
 
-### Supported operating systems
+## Features
 
-All OS's supported by Kite are also supported by the Atom plugin, currently it supports:
-- OSX (10.10 and higher)
-- Windows (7 and higher)
+Kite's goal is to help you write code faster by showing you the right information at the right time. At a high level,
+Kite provides you with:
+* 🧠 __Smart autocompletions__ powered by machine learning models trained on the entire open source code universe
+* 👀 __Advanced function signatures__ that show you not only the official signature of a function, but also the most
+popular ways other developers call the function
+* 🔍 __Instant documentation__ for the symbol underneath your cursor
 
-### Supported languages
 
-The plugin's features are only available in file types supported by the Kite engine:
+## Requirements
 
-- Python: All files with a `.py` extension are supported.
+* macOS 10.10+ or Windows 7+
+* Atom v1.13.0+
+* [Kite Engine](https://kite.com/)
 
-### Install
 
-You can install the Atom plugin from Kite directly. You can also install the plugin by searching for "Kite" in the package manager or by running `apm install kite` in your terminal.
+## Installation
 
-### Startup
+### Installing the Kite Engine
 
-When starting Atom with Kite plugin for the first time, a brief tour about Kite will be displayed in the active pane.
+__macOS Instructions__
+1. Download the [installer](https://kite.com/download) and open the downloaded `.dmg` file.
+2. Drag the Kite icon into the `Applications` folder.
+3. Run `Kite.app` to start the Kite Engine.
 
-![kite tour](https://github.com/kiteco/atom-plugin/blob/master/docs/images/kite-tour.png?raw=true)
+__Windows Instructions__
+1. Download the [installer](https://kite.com/download) and run the downloaded `.exe` file.
+2. The installer should run the Kite Engine automatically after installation is complete.
 
-This tour will only be displayed once. If you want to see it again on next startup you can activate the `Show Kite Tour On Startup` setting.
 
-### Status bar
+### Installing the Kite Assistant for Atom
 
-The Kite icon in the status bar displays the state of Kite for the current file. Clicking on the icon will open the status panel with additional information.
+When running the Kite Engine for the first time, you'll be guided through a setup process which will allow you to install
+the Atom package. You can also install or uninstall the Atom package at any time using the Kite Engine's [plugin
+manager](https://help.kite.com/article/62-managing-editor-plugins).
 
-The icon in the status bar can take three different colors:
+Alternatively, you have 2 options to manually install the package:
+1. Search for "Kite" in Atom's built-in package manager and install from there.
+2. Run the command `apm install kite` in your terminal.
 
-- blue: The Kite Engine is available and functioning properly.<br/>![kite tour](https://github.com/kiteco/atom-plugin/blob/master/docs/images/kite-status-ready.png?raw=true)
-- gray: There's either no open file or, if there's an active file, the file is either not supported or not whitelisted.<br/>![kite tour](https://github.com/kiteco/atom-plugin/blob/master/docs/images/kite-status-not-whitelisted.png?raw=true)
-- red: Something went wrong when the plugin tried to contact the Kite service on your computer. Depending on the issue, the status panel can offer actions to solve the problem.<br/>![kite tour](https://github.com/kiteco/atom-plugin/blob/master/docs/images/kite-status-not-running.png?raw=true)
 
-### Editor features
+## Usage
 
-#### Hover info
+The following is a brief guide to using Kite in its default configuration.
 
-When you move the mouse over an expression, Kite can display a popup with a quick summary of what this expression represents, and links to additional documentation.
+### Tutorial
 
-![kite hover](https://github.com/kiteco/atom-plugin/blob/master/docs/images/kite-hover.png?raw=true)
+When starting Atom with the Kite Assistant for the first time, you'll be guided through a tutorial that shows you how to
+use Kite.
 
-You can see up to three links in the popup:
+![tutorial](https://github.com/kiteco/atom-plugin/blob/master/docs/images/tutorial.png?raw=true)
 
-- `def` will open the file where this symbol is defined (this may not be available if Kite cannot find the definition)
-- `docs` will open the Kite copilot with additional documentation for this symbol
+This tutorial will only be displayed once. You can show it again at any time by running the command `Kite: Tutorial` from
+Atom's command palette.
 
-#### Completions
+### Hover
 
-Kite exposes an `autocomplete-plus` provider. When in a supported file, you'll be able to see Kite's suggestions as well as some additional documentation and links in the `autocomplete-plus` panel.
+Hover your mouse cursor over a symbol to view a short summary of what the symbol represents.
 
-![kite completions](https://github.com/kiteco/atom-plugin/blob/master/docs/images/kite-completions.png?raw=true)
+![hover](https://github.com/kiteco/atom-plugin/blob/master/docs/images/hover.png?raw=true)
 
-The links at the bottom have the same behaviour of those in the [hover UI](#hover-documentation).
+### Documentation
 
-#### Function signatures
+Click on the `Docs` link in the hover popup to open the documentation for the symbol inside the Copilot, Kite's standalone
+reference tool.
 
-When typing inside a function's parentheses, Kite will display the function signature with info about the current argument and links to additional documentation.
+![copilot](https://github.com/kiteco/atom-plugin/blob/master/docs/images/copilot.png?raw=true)
 
-![kite signatures](https://github.com/kiteco/atom-plugin/blob/master/docs/images/kite-signature.png?raw=true)
+### Definitions
 
-The links at the bottom have the same behavior of those in the [hover popup](#hover-info).
+If a `Def` link is available in the hover popup, clicking on it will jump to the definition of the symbol.
 
-Kite exposes many commands so that you can setup your own keybindings for them.
+### Autocompletions
+
+Simply start typing in a saved Python file and Kite will automatically suggest completions for what you're typing.
+
+![completions](https://github.com/kiteco/atom-plugin/blob/master/docs/images/completions.png?raw=true)
+
+### Function Signatures
+
+When you call a function, Kite will show you the arguments required to call it.
+
+![signature](https://github.com/kiteco/atom-plugin/blob/master/docs/images/signature.png?raw=true)
+
+Kite also shows you `How others used this` function, which are the most popular calling patterns inferred from all the
+open source code on the internet.
+
+### Commands
+
+Kite comes with sevaral commands that you can run from Atom's command palette.
+
+![commands](https://github.com/kiteco/atom-plugin/blob/master/docs/images/commands.png?raw=true)
 
 |Command|Description|
-|---|---|
-|`kite:docs-at-cursor`|When the cursor is inside an expression, this command will open the copilot with relevant docs.|
-|`kite:open-copilot`|Open the Kite copilot.|
-|`kite:permissions`|Opens Kite permissions into the copilot.|
-|`kite:general-settings`|Opens Kite settings into the copilot.|
-|`kite:editor-plugin-settings`|Opens the Kite plugin settings in Atom.|
-|`kite:help`|Open Kite help into your browser.|
-|`kite:status`|Open the Kite status panel.|
+|:---|:---|
+|`kite:open-copilot`|Open the Copilot|
+|`kite:docs-at-cursor`|Show documentation of the symbol underneath your cursor in the Copilot|
+|`kite:status`|Show the current status of Kite in the status panel|
+|`kite:package-settings`|Open the settings for the Kite Atom package|
+|`kite:engine-settings`|Open the settings for the Kite Engine|
+|`kite:tutorial`|Open the Kite tutorial file|
+|`kite:help`|Open Kite's help website in the browser|
+
+If you wish, you may also setup keybindings for the commands listed above.
+
+
+## Configuration
+
+You can view and change the Kite Assistant's settings by finding Kite in your list of installed packages, then clicking
+the `Settings` button. Alternatively, you can run the command `Kite: Package Settings` from the command palette.
+
+
+## Contact Us
+
+Feel free to contact us with bug reports, feature requests, or general comments at feedback@kite.com.
+
+Happy coding!
