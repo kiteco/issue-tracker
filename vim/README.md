@@ -18,32 +18,6 @@ Download Kite from https://kite.com.  During Kite's installation process, select
 Kite will also keep the plugin up to date automatically.
 
 
-### Manual installation
-
-#### Vim
-
-Assuming your Vim configuration is in `~/.vim/`:
-
-```sh
-$ mkdir -p ~/.vim/pack/kite/start/kite
-$ git clone https://github.com/kiteco/vim-plugin.git ~/.vim/pack/kite/start/kite/
-```
-
-Restart Vim.
-
-
-#### Neovim
-
-Assuming your Neovim configuration is in `~/.config/nvim`:
-
-```sh
-$ mkdir -p ~/.config/nvim/pack/kite/start/kite
-$ git clone https://github.com/kiteco/vim-plugin.git ~/.config/nvim/pack/kite/start/kite/
-```
-
-Restart Neovim.
-
-
 ### Kite Copilot
 
 As you edit your code in Vim/Neovim, the Kite Copilot will show completions, examples, and docs for the code under the cursor.
@@ -127,6 +101,8 @@ let g:kite_documentation_continual=1
 - `KiteGeneralSettings` - open Kite's settings in the Copilot.
 - `KitePermissions` - open Kite's permission settings in the Copilot.
 - `KiteHelp` - show overview documentation.
+- `KiteEnableAutoStart` - start Kite automatically when Vim starts.
+- `KiteDisableAutoStart` - do not start Kite automatically when Vim starts.
 
 
 
@@ -138,26 +114,6 @@ Add `%{kite#statusline()}` to your statusline to get an indicator of what Kite i
 set statusline=%<%f\ %h%m%r%{kite#statusline()}%=%-14.(%l,%c%V%)\ %P
 set laststatus=2  " always display the status line
 ```
-
-
-### Editor metrics
-
-When you start Vim after installing Kite, it will ask whether you wish to opt in to sending metrics about the status of the Kite application to Kite's servers.
-
-You can also opt in or out at any time with the following commands:
-
-```viml
-" Opt in
-:KiteEnableEditorMetrics
-
-" Opt out
-:KiteDisableEditorMetrics
-```
-
-
-### Development
-
-When working on the plugin, ensure the file `~/.kite/vim-development` (or `$LOCALAPPDATA$\Kite\vim-development` on Windows) is present.  This tells the plugin to use development mode, i.e. to use the non-production key when POSTing metrics to Segment.
 
 
 ### Debugging

@@ -6,10 +6,12 @@ The Kite plugin supports the following environments:
 - PyCharm Community
 - PyCharm Professional
 - IntelliJ Community with the Python plugin
-- IntelliJ Ultimate with the Plugin plugin
+- IntelliJ Ultimate with the Python plugin
 
 All versions of these IDEs which are equal to or later than 2016.1 are supported:
-- 2018.2 EAP
+- 2019.1 EAP
+- 2018.3
+- 2018.2
 - 2018.1
 - 2017.3
 - 2017.2

@@ -1,57 +1,103 @@
-# Kite for Visual Studio Code
+# Kite Python Assistant for Visual Studio Code
 
-This extension adds support for Kite in Visual Studio Code and adds the features:
+Kite is an AI-powered programming assistant that helps you write Python code inside Visual Studio Code. The
+[Kite Engine](https://kite.com/) needs to be installed in order for the extension to work properly. The extension itself
+provides the frontend that interfaces with the Kite Engine, which performs all the code analysis and machine learning.
 
-- Completions
-- Function Signatures
-- Hover info and Sidebar
-- Go to Definition
-- Search
 
-## How to install this extension
+## Features
 
-This extension is automatically installed by Kite when you select Visual Studio Code in the list of plugins.
+Kite's goal is to help you write code faster by showing you the right information at the right time. At a high level,
+Kite provides you with:
+* 🧠 __Smart autocompletions__ powered by machine learning models trained on the entire open source code universe
+* 👀 __Function signatures__ that show you the official signature of a function you're currently using
+* 🔍 __Instant documentation__ for the symbol underneath your cursor
 
-### Startup
 
-When starting VSCode with Kite for the first time, a brief tour about Kite will be displayed in the active pane.
+## Requirements
 
-![Kite Tour](./docs/images/kite-tour.png)
+* macOS 10.10+ or Windows 7+
+* Visual Studio Code v1.28.0+
+* [Kite Engine](https://kite.com/)
 
-This tour will only be displayed once. If you want to see it again on next startup you can activate the `kite.showTourOnStartup` setting.
 
-### Status Bar
+## Installation
 
-The Kite icon in the status bar displays the state of Kite for the current file. Clicking on the icon will open the status panel with additional information.
+### Installing the Kite Engine
 
-![kite status bar](./docs/images/kite-status-bar.png)
+__macOS Instructions__
+1. Download the [installer](https://kite.com/download) and open the downloaded `.dmg` file.
+2. Drag the Kite icon into the `Applications` folder.
+3. Run `Kite.app` to start the Kite Engine.
 
-The icon in the status bar can take three different colors:
+__Windows Instructions__
+1. Download the [installer](https://kite.com/download) and run the downloaded `.exe` file.
+2. The installer should run the Kite Engine automatically after installation is complete.
 
-- blue: The Kite Engine is available and functioning properly.<br/>![kite status ready](./docs/images/kite-status-ready.png)
-- gray: There’s either no open file or, if there’s an active file, the file is either not supported or not whitelisted.<br/>![kite status not whitelisted](./docs/images/kite-status-non-whitelisted.png)
-- red: Something went wrong when the plugin tried to contact the Kite service on your computer. Depending on the issue, the status panel can offer actions to solve the problem.<br/>![kite status not running](./docs/images/kite-status-not-running.png)
 
-### Quick Info
+### Installing the Kite Assistant for Visual Studio Code
 
-![kite hover](./docs/images/kite-hover.png)
+When running the Kite Engine for the first time, you'll be guided through a setup process which will allow you to install
+the VS Code extension. You can also install or uninstall the VS Code extension at any time using the Kite Engine's [plugin
+manager](https://help.kite.com/article/62-managing-editor-plugins).
 
-Hovering your mouse over an expression will show you a popup with up to three links:
+Alternatively, you have 2 options to manually install the package:
+1. Search for "Kite" in VS Code's built-in extension marketplace and install from there.
+2. Run the command `code --install-extension kiteco.kite` in your terminal.
 
-- `def` will open the file where this symbol is defined (this may not be available if Kite cannot find the definition)
-- `web` will open the docs for the expression in your browser
-- `more` will open the sidebar with docs for this expression
 
-### Sidebar
+## Usage
 
-The sidebar offers a more detailed view of an expression. You can use it to browse the members of a module or a type, or to access curated examples, and more.
+The following is a brief guide to using Kite in its default configuration.
 
-![Kite Expand Panel](./docs/images/kite-expand-panel.png)
+### Hover
 
-### Search
+Hover your mouse cursor over a symbol to view a short summary of what the symbol represents.
 
-Search is available using the corresponding command from the command palette. It will open the search panel on the side.
+![hover](https://s3.amazonaws.com/helpscout.net/docs/assets/589ced522c7d3a784630c348/images/5c3eb72c2c7d3a3194501270/file-LaHSHhYTkH.png)
 
-Type a module, function or symbol name and browse the results in the panel.
+### Documentation
 
-![Kite Active Search](./docs/images/kite-active-search.png)
+Click on the `Docs` link in the hover popup to open the documentation for the symbol inside the Copilot, Kite's standalone
+reference tool.
+
+![copilot](https://github.com/kiteco/atom-plugin/blob/master/docs/images/copilot.png?raw=true)
+
+### Definitions
+
+If a `Def` link is available in the hover popup, clicking on it will jump to the definition of the symbol.
+
+### Autocompletions
+
+Simply start typing in a saved Python file and Kite will automatically suggest completions for what you're typing. Kite's
+autocompletions are all labeled with the `⟠` symbol.
+
+![completions](https://s3.amazonaws.com/helpscout.net/docs/assets/589ced522c7d3a784630c348/images/5c3eb54f04286304a71e4292/file-jJZznGIq2t.png)
+
+### Function Signatures
+
+When you call a function, Kite will show you the arguments required to call it. Kite's function signatures are also all
+labeled with the `⟠` symbol.
+
+![signature](https://s3.amazonaws.com/helpscout.net/docs/assets/589ced522c7d3a784630c348/images/5c3eb6ad2c7d3a319450126e/file-j1bl9zETcx.png)
+
+> __Note:__ If you have the Microsoft Python extension installed, Kite will _not_ be able to show you information on
+> function signatures.
+
+### Commands
+
+Kite comes with sevaral commands that you can run from VS Code's command palette.
+
+|Command|Description|
+|:---|:---|
+|`kite.open-copilot`|Open the Copilot|
+|`kite.docs-at-cursor`|Show documentation of the symbol underneath your cursor in the Copilot|
+|`kite.engine-settings`|Open the settings for the Kite Engine|
+|`kite.help`|Open Kite's help website in the browser|
+
+
+## Contact Us
+
+Feel free to contact us with bug reports, feature requests, or general comments at feedback@kite.com.
+
+Happy coding!
