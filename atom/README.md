@@ -46,6 +46,8 @@ Alternatively, you have 2 options to manually install the package:
 1. Search for "Kite" in Atom's built-in package manager and install from there.
 2. Run the command `apm install kite` in your terminal.
 
+[Learn more about Kite for Atom.](https://www.kite.com/integrations/atom)
+
 
 ## Usage
 
@@ -123,3 +125,17 @@ the `Settings` button. Alternatively, you can run the command `Kite: Package Set
 Feel free to contact us with bug reports, feature requests, or general comments at feedback@kite.com.
 
 Happy coding!
+
+
+---
+
+#### About Kite
+
+Kite is built by a team in San Francisco devoted to making programming easier and more enjoyable for all. Follow Kite on
+[Twitter](https://twitter.com/kitehq) and get the latest news and programming tips on the
+[Kite Blog](https://kite.com/blog).
+Kite has been featured in [Wired](https://www.wired.com/2016/04/kites-coding-asssitant-spots-errors-finds-better-open-source/), 
+[VentureBeat](https://venturebeat.com/2019/01/28/kite-raises-17-million-for-its-ai-powered-developer-environment/), 
+[The Next Web](https://thenextweb.com/dd/2016/04/14/kite-plugin/), and 
+[TechCrunch](https://techcrunch.com/2019/01/28/kite-raises-17m-for-its-ai-driven-code-completion-tool/). 
+
