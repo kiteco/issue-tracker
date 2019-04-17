@@ -44,6 +44,8 @@ manager](https://help.kite.com/article/62-managing-editor-plugins).
 Alternatively, you can `git clone` this repository directly into your Sublime `Packages` directory. You can locate your
 `Packages` directory by opening Sublime, clicking on the `Preferences` menu item, then selecting `Browse Packages...`.
 
+[Learn more about Kite for Sublime.](https://www.kite.com/integrations/sublime-text)
+
 
 ## Usage
 
@@ -113,3 +115,17 @@ be self documenting.
 Feel free to contact us with bug reports, feature requests, or general comments at feedback@kite.com.
 
 Happy coding!
+
+
+---
+
+#### About Kite
+
+Kite is built by a team in San Francisco devoted to making programming easier and more enjoyable for all. Follow Kite on
+[Twitter](https://twitter.com/kitehq) and get the latest news and programming tips on the
+[Kite Blog](https://kite.com/blog).
+Kite has been featured in [Wired](https://www.wired.com/2016/04/kites-coding-asssitant-spots-errors-finds-better-open-source/), 
+[VentureBeat](https://venturebeat.com/2019/01/28/kite-raises-17-million-for-its-ai-powered-developer-environment/), 
+[The Next Web](https://thenextweb.com/dd/2016/04/14/kite-plugin/), and 
+[TechCrunch](https://techcrunch.com/2019/01/28/kite-raises-17m-for-its-ai-driven-code-completion-tool/). 
+
