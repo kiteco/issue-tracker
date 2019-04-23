@@ -17,7 +17,7 @@ popular ways other developers call the function
 
 ## Requirements
 
-* macOS 10.10+ or Windows 7+
+* macOS 10.11+ or Windows 7+
 * Atom v1.13.0+
 * [Kite Engine](https://kite.com/)
 
