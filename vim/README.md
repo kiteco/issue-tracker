@@ -77,6 +77,15 @@ set belloff+=ctrlg  " if vim beeps during completion
 ```
 
 
+### Signatures
+
+Kite can show how other people used the signature you are using.  By default this is off to save space.
+
+To turn it on: `:KiteShowPopularPatterns`.
+
+To turn it off: `:KiteHidePopularPatterns`.
+
+
 ### Documentation
 
 Press `K` when the cursor is on a keyword to view its documentation in Kite Copilot.

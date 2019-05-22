@@ -16,7 +16,7 @@ Kite provides you with:
 
 ## Requirements
 
-* macOS 10.11+ or Windows 7+
+* macOS 10.11+, Windows 7+ or Linux
 * Visual Studio Code v1.28.0+
 * [Kite Engine](https://kite.com/)
 

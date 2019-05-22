@@ -17,7 +17,8 @@ popular ways other developers call the function
 
 ## Requirements
 
-* macOS 10.10+ or Windows 7+
+* macOS 10.10+ or Windows 7+ or Linux (Ubuntu, Debian, Fedora, Arch Linux, Linux Mint, openSUSE, KDE, XFCE, Gnome 2, 
+Gnome 3)
 * Sublime Text build 3000+
 * [Kite Engine](https://kite.com/)
 
@@ -33,6 +34,10 @@ __macOS Instructions__
 
 __Windows Instructions__
 1. Download the [installer](https://kite.com/download) and run the downloaded `.exe` file.
+2. The installer should run the Kite Engine automatically after installation is complete.
+
+__Linux Instructions__
+1. Follow our [instructions](https://kite.com/linux) to install Kite.
 2. The installer should run the Kite Engine automatically after installation is complete.
 
 ### Installing the Kite Assistant for Sublime
@@ -109,6 +114,10 @@ Furthermore, Kite comes with the following default keyboard shortcuts:
 You can change Kite's settings by clicking on `Preferences`, then `Package Settings`, then `Kite`. Alternatively, you can 
 access the preferences files from the command palette using `Kite: Package Settings`. The default preferences file should
 be self documenting.
+
+## Known Issues
+
+* On Sublime 3200+, the function signature UI is truncated in some situations. ([Issue]( https://github.com/SublimeTextIssues/Core/issues/2711))
 
 ## Contact Us
 
