@@ -43,20 +43,13 @@ Normally you insert the currently selected completion option with `<C-y>`.  If y
 let g:kite_tab_complete=1
 ```
 
-You can configure how the completions behave with `&completeopt`.  The plugin configures `&completeopt` as follows if and only if you haven't configured it yourself:
+Every time you enter a Python buffer the plugin updates `completeopt` as follows:
 
 ```viml
-set completeopt-=menu
 set completeopt+=menuone   " show the popup menu even when there is only 1 match
-set completeopt-=longest   " don't insert the longest common text
-set completeopt-=preview   " don't show preview window
 set completeopt+=noinsert  " don't insert any text until user chooses a match
-set completeopt-=noselect  " select first match
+set completeopt-=longest   " don't insert the longest common text
 ```
-
-Make sure you have either `menu` or `menuone` otherwise you won't see any completions.
-
-If you set `longest` together with `menu` or `menuone`, you will need to type `CTRL-L` when the pop-up menu is showing to insert the longest common text.  See `:help completeopt` for details.
 
 To see documentation in the preview window for each completion option, copy all the lines above into your vimrc and change the preview line to:
 
