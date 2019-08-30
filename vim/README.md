@@ -37,6 +37,12 @@ let g:kite_auto_complete=0
 
 You can manually invoke the completions in insert mode with `<C-X><C-U>`.  See `:h i_CTRL-X_CTRL-U` for details.
 
+Kite's completions include snippets by default.  To opt out of the snippets, add this to your vimrc:
+
+```viml
+let g:kite_snippets=0
+```
+
 Normally you insert the currently selected completion option with `<C-y>`.  If you'd like to use `<Tab>` instead / as well, add this to your vimrc:
 
 ```viml
@@ -67,6 +73,20 @@ We also recommend:
 
 ```viml
 set belloff+=ctrlg  " if vim beeps during completion
+```
+
+
+#### Placeholders
+
+Some completions have placeholders which can be filled in.  These will be highlighted with the Underline highlight group.
+
+You can navigate between placeholders with `<CTRL-J>` (forward) and `<CTRL-K>` (backward), even after you have typed over the original placeholder text.
+
+To change these keys:
+
+```viml
+let g:kite_previous_placeholder = '<C-H>'
+let g:kite_next_placeholder = '<C-L>`
 ```
 
 
