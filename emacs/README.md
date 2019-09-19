@@ -1,20 +1,5 @@
 # Emacs plugin for Kite
 
-### Installation
+We're sorry, Kite does not support emacs.
 
-Download Kite from http://kite.com/. During the installation process, select
-"Emacs" in the list of editors and Kite will install this plugin for you.
-
-### Manual Installation
-
-Copy `kite.el` to `~/.emacs.d/kite.el` and add the following to your `.emacs`:
-
-```
-(load-file "~/.emacs.d/kite.el")
-```
-
-### Debugging pointers
-
-Primer for those not familiar with emacs development:
-- Use `M-x load-file` to load and execute a `.el` file in emacs.
-- To see log output from the plugin, switch to the `*Messages*` buffer.
+If you would like to be notified if this changes in the future, enter your contact information [here](https://kite.com/letmeknow).
