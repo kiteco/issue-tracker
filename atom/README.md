@@ -1,18 +1,11 @@
-# Kite Python Assistant
+# Kite Python Plugin for Atom
 
-Kite is an AI-powered programming assistant that helps you write Python code inside Atom. The
-[Kite Engine](https://kite.com/) needs to be installed in order for the package to work properly. The package itself
-provides the frontend that interfaces with the Kite Engine, which performs all the code analysis and machine learning.
+Kite is an AI-powered programming assistant that helps you write Python code inside Atom. Kite helps you write code faster by showing you the right information at the right time. Learn more about how Kite boosts your Atom editor's capabilities at https://kite.com/integrations/atom-editor/. 
 
-
-## Features
-
-Kite's goal is to help you write code faster by showing you the right information at the right time. At a high level,
-Kite provides you with:
-* 🧠 __Smart autocompletions__ powered by machine learning models trained on the entire open source code universe
-* 👀 __Advanced function signatures__ that show you not only the official signature of a function, but also the most
-popular ways other developers call the function
-* 🔍 __Instant documentation__ for the symbol underneath your cursor
+At a high level, Kite provides you with:
+* 🧠 __[Line-of-Code Completions](https://kite.com/blog/product/launching-line-of-code-completions-going-cloudless-and-17-million-in-funding/)__ powered by machine learning models trained on the entire open source code universe
+* 📝 __[Intelligent Snippets](https://kite.com/blog/product/announcing-intelligent-snippets-for-python/)__ that automatically provide context-relevant code snippets for your function calls
+* 🔍 __[Instant documentation](https://kite.com/copilot/)__ for the symbol underneath your cursor so you save time searching for Python docs
 
 
 ## Requirements
@@ -21,10 +14,14 @@ popular ways other developers call the function
 * Atom v1.13.0+
 * [Kite Engine](https://kite.com/)
 
+Use another editor? Check out [Kite’s other editor integrations](https://kite.com/integrations/).
 
 ## Installation
 
 ### Installing the Kite Engine
+
+The [Kite Engine](https://kite.com/) needs to be installed in order for the package to work properly. The package itself
+provides the frontend that interfaces with the Kite Engine, which performs all the code analysis and machine learning 100% locally on your computer (no code is sent to a cloud server).
 
 __macOS Instructions__
 1. Download the [installer](https://kite.com/download) and open the downloaded `.dmg` file.
@@ -35,8 +32,12 @@ __Windows Instructions__
 1. Download the [installer](https://kite.com/download) and run the downloaded `.exe` file.
 2. The installer should run the Kite Engine automatically after installation is complete.
 
+__Linux Instructions__
+1. Visit https://kite.com/linux/ to install Kite.
+2. The installer should run the Kite Engine automatically after installation is complete.
 
-### Installing the Kite Assistant for Atom
+
+### Installing the Kite Plugin for Atom
 
 When running the Kite Engine for the first time, you'll be guided through a setup process which will allow you to install
 the Atom package. You can also install or uninstall the Atom package at any time using the Kite Engine's [plugin
@@ -46,7 +47,7 @@ Alternatively, you have 2 options to manually install the package:
 1. Search for "Kite" in Atom's built-in package manager and install from there.
 2. Run the command `apm install kite` in your terminal.
 
-[Learn more about Kite for Atom.](https://www.kite.com/integrations/atom)
+[Learn more about why you should use Kite with Atom.](https://kite.com/integrations/atom-editor/)
 
 
 ## Usage
