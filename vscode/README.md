@@ -1,17 +1,11 @@
-# Kite Python Assistant for Visual Studio Code
+# Kite Python Plugin for Visual Studio Code
 
-Kite is an AI-powered programming assistant that helps you write Python code inside Visual Studio Code. The
-[Kite Engine](https://kite.com/) needs to be installed in order for the extension to work properly. The extension itself
-provides the frontend that interfaces with the Kite Engine, which performs all the code analysis and machine learning.
+Kite is an AI-powered programming assistant that helps you write Python code inside Visual Studio Code. Kite helps you write code faster by showing you the right information at the right time. Learn more about how Kite heightens VS Code's capabilities at https://kite.com/integrations/vs-code/.
 
-
-## Features
-
-Kite's goal is to help you write code faster by showing you the right information at the right time. At a high level,
-Kite provides you with:
-* 🧠 __Smart autocompletions__ powered by machine learning models trained on the entire open source code universe
-* 👀 __Function signatures__ that show you the official signature of a function you're currently using
-* 🔍 __Instant documentation__ for the symbol underneath your cursor
+At a high level, Kite provides you with:
+* 🧠 __[Line-of-Code Completions](https://kite.com/blog/product/launching-line-of-code-completions-going-cloudless-and-17-million-in-funding/)__ powered by machine learning models trained on the entire open source code universe
+* 📝 __[Intelligent Snippets](https://kite.com/blog/product/announcing-intelligent-snippets-for-python/)__ that automatically provide context-relevant code snippets for your function calls
+* 🔍 __[Instant documentation](https://kite.com/copilot/)__ for the symbol underneath your cursor so you save time searching for Python docs
 
 
 ## Requirements
@@ -20,21 +14,31 @@ Kite provides you with:
 * Visual Studio Code v1.28.0+
 * [Kite Engine](https://kite.com/)
 
+Use another editor? Check out [Kite’s other editor integrations](https://kite.com/integrations/).
+
 
 ## Installation
 
 ### Installing the Kite Engine
 
+The [Kite Engine](https://kite.com/) needs to be installed in order for the package to work properly. The package itself
+provides the frontend that interfaces with the Kite Engine, which performs all the code analysis and machine learning 100% locally on your computer (no code is sent to a cloud server).
+
 __macOS Instructions__
-1. Download the [installer](https://kite.com/download) and open the downloaded `.dmg` file.
+1. Download the [installer](https://kite.com/download/) and open the downloaded `.dmg` file.
 2. Drag the Kite icon into the `Applications` folder.
 3. Run `Kite.app` to start the Kite Engine.
 
 __Windows Instructions__
-1. Download the [installer](https://kite.com/download) and run the downloaded `.exe` file.
+1. Download the [installer](https://kite.com/download/) and run the downloaded `.exe` file.
 2. The installer should run the Kite Engine automatically after installation is complete.
 
-### Installing the Kite Assistant for Visual Studio Code
+__Linux Instructions__
+1. Visit https://kite.com/linux/ to install Kite.
+2. The installer should run the Kite Engine automatically after installation is complete.
+
+
+### Installing the Kite Plugin for Visual Studio Code
 
 When running the Kite Engine for the first time, you'll be guided through a setup process which will allow you to install
 the VS Code extension. You can also install or uninstall the VS Code extension at any time using the Kite Engine's [plugin
@@ -44,7 +48,7 @@ Alternatively, you have 2 options to manually install the package:
 1. Search for "Kite" in VS Code's built-in extension marketplace and install from there.
 2. Run the command `code --install-extension kiteco.kite` in your terminal.
 
-[Learn more about Kite for VS Code.](https://www.kite.com/integrations/vs-code)
+[Learn about the capabilities Kite adds to VS Code.](https://kite.com/integrations/vs-code/)
 
 
 ## Usage
@@ -110,7 +114,7 @@ Happy coding!
 
 Kite is built by a team in San Francisco devoted to making programming easier and more enjoyable for all. Follow Kite on
 [Twitter](https://twitter.com/kitehq) and get the latest news and programming tips on the
-[Kite Blog](https://kite.com/blog).
+[Kite Blog](https://kite.com/blog/).
 Kite has been featured in [Wired](https://www.wired.com/2016/04/kites-coding-asssitant-spots-errors-finds-better-open-source/), 
 [VentureBeat](https://venturebeat.com/2019/01/28/kite-raises-17-million-for-its-ai-powered-developer-environment/), 
 [The Next Web](https://thenextweb.com/dd/2016/04/14/kite-plugin/), and 
