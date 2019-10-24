@@ -151,7 +151,7 @@ let g:kite_documentation_continual=1
 - `KiteOpenCopilot` - open the Kite Copilot and focus on it.
 - `KiteGeneralSettings` - open Kite's settings in the Copilot.
 - `KitePermissions` - open Kite's permission settings in the Copilot.
-- `KiteHelp` - show overview documentation.
+- `KiteTutorial` - show a tutorial for how to use Kite with Vim.
 - `KiteEnableAutoStart` - start Kite automatically when Vim starts.
 - `KiteDisableAutoStart` - do not start Kite automatically when Vim starts.
 
