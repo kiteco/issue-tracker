@@ -23,8 +23,10 @@ Otherwise, please open an issue in this repository if you are using Kite's produ
 1. Please make sure your problem has not already been solved in our [__troubleshooting guide__](https://help.kite.com/category/52-common-issues-troubleshooting).
 2. Please provide the relevant logs to help our product and engineering teams debug effectively. This [__help article__](https://help.kite.com/article/96-contact-us-with-logs)
 contains information on how to access and share Kite's logs on your system.
+3. Please search the existing issues to make sure someone else hasn't reported your issue already. If there is
+already an open issue, you can still contribute by sharing your logs generated in step 2.
 
-## What this repository isn't
+## ⛔ What this repository isn't
 
 Please do not use this repository to ask general questions about Kite, or to ask for help using the product. We have
 extensive [__help articles__](https://help.kite.com) for those purposes.
