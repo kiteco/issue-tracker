@@ -16,8 +16,11 @@ Please open an issue in this repository if you are using Kite's product and have
 * 💡 A suggestion to enhance the product
 * 🎁 A new feature request
 
-> ⚠ If you are opening a bug report, please make sure your problem has not already been solved in our
-[__troubleshooting guide__](https://help.kite.com/category/52-common-issues-troubleshooting).
+## When opening a bug report...
+
+1. Please make sure your problem has not already been solved in our [__troubleshooting guide__](https://help.kite.com/category/52-common-issues-troubleshooting).
+2. Please provide the relevant logs to help our product and engineering teams debug effectively. This [__help article__](https://help.kite.com/article/96-contact-us-with-logs)
+contains information on how to access and share Kite's logs on your system.
 
 ## What this repository isn't
 
