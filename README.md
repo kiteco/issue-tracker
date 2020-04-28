@@ -10,7 +10,9 @@ on user interactions within the editor.
 * __Kite Copilot:__ Standalone documentation tool that can show you docs for the Python object underneath your editor's
 cursor.
 
-Please open an issue in this repository if you are using Kite's product and have one of the following:
+You're a new user, you can [__download Kite here__](https://kite.com/download).
+
+Otherwise, please open an issue in this repository if you are using Kite's product and have one of the following:
 
 * 🐛 A bug report
 * 💡 A suggestion to enhance the product
