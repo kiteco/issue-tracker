@@ -7,7 +7,7 @@ of:
 experience.
 * __Editor plugins:__ Kite provides integrations with a variety of editors. These plugins talk to the Kite Engine based
 on user interactions within the editor.
-* __Kite Copilot:__ Standalone documentation tool that can show you docs for the Python object underneath your editor's
+* __Kite Copilot:__ Companion documentation tool that can show you docs for the Python object underneath your editor's
 cursor.
 
 If you're a new user, you can [__download Kite here__](https://kite.com/download).
