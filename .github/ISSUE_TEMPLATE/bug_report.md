@@ -16,7 +16,7 @@ To help us triage your issue effectively, please make sure you've completed thes
 - [ ] If reporting an issue with Kite's editor plugin, include which editor you are using and the version, and any accompanying logs from your editor's console.
 
 **Describe the bug**
-A clear and concise description of what the bug is.
+A clear description of what the bug is. Include steps to reproduce the bug if necessary.
 
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
