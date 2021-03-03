@@ -2,7 +2,7 @@
 name: Bug report
 about: Report a problem with the Kite product
 title: ''
-labels: ''
+labels: bug, Needs Triage
 assignees: ''
 
 ---

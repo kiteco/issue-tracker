@@ -2,7 +2,7 @@
 name: Feature request
 about: Suggest an improvement for Kite
 title: ''
-labels: ''
+labels: Needs Triage, feature request
 assignees: ''
 
 ---
